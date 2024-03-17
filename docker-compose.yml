@@ -1,10 +1,47 @@
 version: '3.8'
 services:
   frontend:
+    container_name: front
     build: front
     ports:
       - 8080:8080
+    volumes:
+      - ./front:/app
+      - /app/node_modules
+    command: npm run serve
+    networks:
+      - matcha
+  
   backend:
+    container_name: back
     build: back
     ports:
       - 5000:5000
+    volumes:
+      - back_workdir:/app
+      - /app/node_modules
+      - ./back:/app
+    networks:
+      - matcha
+
+networks:
+  matcha:
+    driver: bridge
+
+volumes:
+  backend_data:
+  postgres_data:
+
+  back_workdir:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./back
+      o: bind
+
+  front_workdir:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./front
+      o: bind
