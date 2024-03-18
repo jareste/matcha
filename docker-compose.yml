@@ -19,8 +19,20 @@ services:
       - 5000:5000
     volumes:
       - back_workdir:/app
-      - /app/node_modules
       - ./back:/app
+    networks:
+      - matcha
+    environment:
+      DATABASE_URL: postgresql://yourusernameENV:yourpasswordENV@db:5432/yourdatabaseENV
+  
+  Postgre:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: yourusernameENV
+      POSTGRES_PASSWORD: yourpasswordENV
+      POSTGRES_DB: yourdatabaseENV
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - matcha
 
