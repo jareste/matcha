@@ -5,6 +5,6 @@ bp = Blueprint('routes', __name__)
 @bp.route('/api/data', methods=['GET'])
 def get_data():
     from srcs.models import store_username
-    store_username("tesEEEEEEEEt")
+    store_username("tesEEEEEEEEdasdasdasdat")
     data = {"message": "Hello Worldssssssssssssss"}
     return jsonify(data)
