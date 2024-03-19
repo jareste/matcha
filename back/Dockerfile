@@ -7,6 +7,7 @@ RUN pip3 install -r requirements.txt
 
 # ENV FLASK_ENV development
 ENV FLASK_DEBUG 1
+ENV PYTHONUNBUFFERED=1
 
 COPY . /app
 

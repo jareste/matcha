@@ -1,7 +1,20 @@
 <template>
   <div>
-    <button @click="fetchData">Fetch Data</button>
-    <button @click="fetchData1">Fetch Dasta1</button>
+    <form @submit.prevent="login">
+      <h2>Login</h2>
+      <input type="text" v-model="loginForm.username" placeholder="Username">
+      <input type="password" v-model="loginForm.password" placeholder="Password">
+      <button type="submit">Login</button>
+    </form>
+
+    <form @submit.prevent="register">
+      <h2>Register</h2>
+      <input type="text" v-model="registerForm.username" placeholder="Username">
+      <input type="email" v-model="registerForm.email" placeholder="Email">
+      <input type="password" v-model="registerForm.password" placeholder="Password">
+      <input type="password" v-model="registerForm.passwordConfirmation" placeholder="Confirm Password">
+      <button type="submit">Register</button>
+    </form>
   </div>
 </template>
 
@@ -9,23 +22,41 @@
 import axios from 'axios';
 
 export default {
+  data() {
+    return {
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      registerForm: {
+        username: '',
+        email: '',
+        password: '',
+        passwordConfirmation: ''
+      }
+    }
+  },
   methods: {
-    fetchData() {
-      axios.get('http://localhost:5000/api/data')
+    login() {
+      axios.post('http://localhost:5000/login', this.loginForm)
         .then(response => {
-          console.log('Hello Worlsd');
           console.log(response.data);
         })
         .catch(error => {
           console.error(error);
         });
     },
-    fetchData1() {
-      axios.get('http://localhost:5000/api/bye')
+    register() {
+      const user = {
+        username: this.registerForm.username,
+        email: this.registerForm.email,
+        password: this.registerForm.password,
+        password_confirmation: this.registerForm.passwordConfirmation,  // Change this line
+      };
+      console.log(user);
+      axios.post('http://localhost:5000/register', user)
         .then(response => {
-          console.log('sadge');
           console.log(response.data);
-          console.log('sadge');
         })
         .catch(error => {
           console.error(error);
