@@ -1,41 +1,63 @@
-from . import db
-from flask import current_app
-from sqlalchemy import Table, Column, Integer, ForeignKey
-from sqlalchemy.orm import relationship
+import sqlite3
 
-# Association table
-# matches = db.Table('matches',
-#     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-#     db.Column('match_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
-# )
+class Field:
+    def __init__(self, field_type, default=None):
+        self.type = field_type
+        self.default = default
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False, default='')
-    email = db.Column(db.String(120), unique=True, nullable=False, default='')
-    password = db.Column(db.String(120), nullable=False, default='')
-    online = db.Column(db.Boolean, nullable=False, default=False)
-    mmr = db.Column(db.Integer, nullable=False, default=1000)
-    jwt = db.Column(db.String(120), nullable=True, default='')
-    validated = db.Column(db.Boolean, nullable=False, default=False)
+class BaseModel:
+    def __init__(self, **kwargs):
+        self.connection = sqlite3.connect('database.db')
+        self.cursor = self.connection.cursor()
+        self.table_name = self.__class__.__name__.lower()
+        self.fields = {name: field for name, field in self.__class__.__dict__.items() if isinstance(field, Field)}
+        self.create_table()
 
-    # # Define the relationship to User itself
-    # matches = db.relationship('User',
-    #                           secondary=matches,
-    #                           primaryjoin=id==matches.c.user_id,
-    #                           secondaryjoin=id==matches.c.match_id,
-    #                           backref='matched_by')
+    def create_table(self):
+        fields_str = ', '.join(f'{name} {field.type}' for name, field in self.fields.items())
+        self.cursor.execute(f'CREATE TABLE IF NOT EXISTS {self.table_name} ({fields_str})')
+        self.connection.commit()
 
-    def __init__(self, username, email, password):
-        self.username = username
-        self.email = email
-        self.password = password
+    def insert(self, **kwargs):
+        fields_str = ', '.join(kwargs.keys())
+        values_str = ', '.join('?' for _ in kwargs.values())
+        values = tuple(kwargs.values())
+        self.cursor.execute(f'INSERT INTO {self.table_name} ({fields_str}) VALUES ({values_str})', values)
+        self.connection.commit()
 
+    def select(self, **conditions):
+        if conditions:
+            fields = conditions.keys()
+            values = tuple(conditions.values())
+            conditions_str = ' AND '.join(f'{field} = ?' for field in fields)
+            self.cursor.execute(f'SELECT * FROM {self.table_name} WHERE {conditions_str}', values)
+        else:
+            self.cursor.execute(f'SELECT * FROM {self.table_name}')
+        return self.cursor.fetchall()
 
-def store_username(username):
-    user = User(username=username)
-    db.session.add(user)
-    db.session.commit()
+    def update(self, updates, conditions):
+        updates_str = ', '.join(f'{field} = ?' for field in updates.keys())
+        conditions_str = ' AND '.join(f'{field} = ?' for field in conditions.keys())
+        values = tuple(list(updates.values()) + list(conditions.values()))
+        self.cursor.execute(f'UPDATE {self.table_name} SET {updates_str} WHERE {conditions_str}', values)
+        self.connection.commit()
 
-with current_app.app_context():
-    db.create_all()
+    def get_fields(self):
+        self.cursor.execute(f'PRAGMA table_info({self.table_name})')
+        return self.cursor.fetchall()
+    
+    def add_column(self, column_name, column_type):
+        self.cursor.execute(f'ALTER TABLE {self.table_name} ADD COLUMN {column_name} {column_type}')
+        self.connection.commit()
+
+class User(BaseModel):
+    username = Field('TEXT')
+    email = Field('TEXT')
+    password = Field('TEXT')
+    jwt = Field('TEXT', default='')
+
+# Usage
+user = User()
+# user.add_column('jwt', 'TEXT')
+user.insert(username='test', email='test@test.com', password='password', jwt='')
+print(user.select(username='test'))

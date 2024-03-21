@@ -1,9 +1,8 @@
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User, db
+from .models import User
 from flask import Blueprint, request, jsonify
 from flask import app
-from sqlalchemy.exc import SQLAlchemyError
 
 bp = Blueprint('login', __name__)
 
@@ -22,42 +21,38 @@ def register():
     if password != password_confirmation:
         return jsonify({"msg": "Passwords do not match"}), 400
 
-    existing_user = User.query.filter_by(username=username).first()
+    user_model = User()
+    existing_user = user_model.select(username=username)
     if existing_user:
         return jsonify({"msg": "Username already exists"}), 400
 
-    existing_email = User.query.filter_by(email=email).first()
+    existing_email = user_model.select(email=email)
     if existing_email:
         return jsonify({"msg": "Email already exists"}), 400
 
     try:
-        user = User(
-            username=username,
-            email=email,
-            password=generate_password_hash(password)
-        )
-
-        db.session.add(user)
-        db.session.commit()
+        hashed_password = generate_password_hash(password)
+        user_model.insert(username=username, email=email, password=hashed_password)
 
         return jsonify({"msg": "User created successfully"}), 201
-    except SQLAlchemyError as e:
+    except Exception as e:
         return jsonify({"msg": str(e)}), 500
-
 
 @bp.route('/login', methods=['POST'])
 def login():
     username = request.json.get('username', None)
     password = request.json.get('password', None)
-    user = User.query.filter_by(username=username).first()
+    user_model = User()
+    user = user_model.select(username=username)
 
-    if user and check_password_hash(user.password, password):
-        # Create a new token every time a user logs in
+    if user and check_password_hash(user[0][2], password):  # user[0][2] is the password field
         access_token = create_access_token(identity=username)
         
-        # Store the token in the user model
-        user.jwt = access_token
-        db.session.commit()
+        user_model.update(updates={'jwt': access_token}, conditions={'username': username})
+
+        users = user_model.select()
+        for user in users:
+            print(user) 
 
         return jsonify(access_token=access_token), 200
 
