@@ -18,7 +18,6 @@ services:
     ports:
       - 5000:5000
     volumes:
-      - back_workdir:/app
       - ./back:/app
     networks:
       - matcha

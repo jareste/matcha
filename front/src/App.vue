@@ -1,21 +1,31 @@
 <template>
-  <div>
-    <form @submit.prevent="login">
-      <h2>Login</h2>
-      <input type="text" v-model="loginForm.username" placeholder="Username">
-      <input type="password" v-model="loginForm.password" placeholder="Password">
-      <button type="submit">Login</button>
-    </form>
+  <b-container>
+    <b-row class="justify-content-center">
+      <b-col cols="12" md="8">
+        <b-card header="Vue.js Authentication" class="my-3">
+          <router-view></router-view>
+          <b-form @submit.prevent="login">
+            <b-card-title>Login</b-card-title>
+            <b-form-input type="text" v-model="loginForm.username" placeholder="Username"></b-form-input>
+            <b-form-input type="password" v-model="loginForm.password" placeholder="Password"></b-form-input>
+            <b-button type="submit" variant="primary">Login</b-button>
+          </b-form>
 
-    <form @submit.prevent="register">
-      <h2>Register</h2>
-      <input type="text" v-model="registerForm.username" placeholder="Username">
-      <input type="email" v-model="registerForm.email" placeholder="Email">
-      <input type="password" v-model="registerForm.password" placeholder="Password">
-      <input type="password" v-model="registerForm.passwordConfirmation" placeholder="Confirm Password">
-      <button type="submit">Register</button>
-    </form>
-  </div>
+          <b-form @submit.prevent="register" class="mt-3">
+            <b-card-title>Register</b-card-title>
+            <b-form-input type="text" v-model="registerForm.username" placeholder="Username"></b-form-input>
+            <b-form-input type="email" v-model="registerForm.email" placeholder="Email"></b-form-input>
+            <b-form-input type="password" v-model="registerForm.password" placeholder="Password"></b-form-input>
+            <b-form-input type="password" v-model="registerForm.passwordConfirmation" placeholder="Confirm Password"></b-form-input>
+            <b-button type="submit" variant="primary">Register</b-button>
+          </b-form>
+        </b-card>
+      </b-col>
+    </b-row>
+  </b-container>
+  <b-footer class="mt-3 text-center">
+    <p>Vue.js Authentication</p>
+  </b-footer>
 </template>
 
 <script>
