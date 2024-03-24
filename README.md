@@ -1,0 +1,14 @@
+TODO:
+- style the page.
+- competent and fixed header/footer.
+- add mmr
+- algo for mmr
+- request photos before completing register.
+- ask for age.
+- add tags for what they like.
+- make page responsive.
+- add profile page.
+- add edit profile page.
+- add more fields to db.
+- add default profiles so the db has something (testing purposes).
+- add chat
