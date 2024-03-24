@@ -1,4 +1,6 @@
 import sqlite3
+import csv
+from werkzeug.security import generate_password_hash
 
 class Field:
     def __init__(self, field_type, default=None):
@@ -46,6 +48,10 @@ class BaseModel:
         self.cursor.execute(f'PRAGMA table_info({self.table_name})')
         return self.cursor.fetchall()
     
+    def select_all(self):
+        self.cursor.execute(f'SELECT * FROM {self.table_name}')
+        return self.cursor.fetchall()
+
     def add_column(self, column_name, column_type):
         self.cursor.execute(f'ALTER TABLE {self.table_name} ADD COLUMN {column_name} {column_type}')
         self.connection.commit()
@@ -56,8 +62,20 @@ class User(BaseModel):
     password = Field('TEXT')
     jwt = Field('TEXT', default='')
 
-# Usage
-user = User()
-# user.add_column('jwt', 'TEXT')
-user.insert(username='test', email='test@test.com', password='password', jwt='')
-print(user.select(username='test'))
+def insert_users_from_csv(file_name):
+    with open(file_name, 'r') as file:
+        reader = csv.DictReader(file)
+        user = User()
+        for row in reader:
+            existing_user = user.select(username=row['username'], email=row['email'])
+            if not existing_user:
+                hashed_password = generate_password_hash(row['password'])
+                row['password'] = hashed_password
+                user.insert(**row)
+
+    all_users = user.select_all()
+    for user in all_users:
+        print(user)
+
+insert_users_from_csv('users.csv')
+
