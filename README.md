@@ -12,3 +12,4 @@ TODO:
 - add more fields to db.
 - add default profiles so the db has something (testing purposes).
 - add chat
+- do notifications stuff.

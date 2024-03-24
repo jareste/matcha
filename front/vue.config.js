@@ -2,6 +2,9 @@ const { defineConfig } = require('@vue/cli-service')
 
 module.exports = {
   devServer: {
-    watchFiles: ['src/**/*'],
+    host: '0.0.0.0',
+    hot: true,
+    allowedHosts: 'all',
+    watchFiles: '**/*',
   },
 };
