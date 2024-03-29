@@ -10,6 +10,7 @@ def create_app():
 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
     app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # Change this!
+    app.config['UPLOAD_FOLDER'] = app.root_path + '/media'
 
     jwt.init_app(app)
 

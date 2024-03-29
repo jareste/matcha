@@ -56,6 +56,16 @@ class BaseModel:
         self.cursor.execute(f'ALTER TABLE {self.table_name} ADD COLUMN {column_name} {column_type}')
         self.connection.commit()
 
+class Photo(BaseModel):
+    user_id = Field('INTEGER')
+    url = Field('TEXT')
+    # To use::
+    # To add a photo for a user
+    # photo = Photo()
+    # photo.insert(user_id=user_id, url='/path/to/photo.jpg')
+    # # To get all photos for a user
+    # photos = photo.select(user_id=user_id)
+
 class User(BaseModel):
     username = Field('TEXT')
     email = Field('TEXT')
