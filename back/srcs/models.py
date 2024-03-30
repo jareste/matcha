@@ -2,6 +2,17 @@ import sqlite3
 import csv
 from werkzeug.security import generate_password_hash
 
+import hashlib
+
+def hash_to_db(name):
+    hash_object = hashlib.sha256()
+
+    hash_object.update(name.encode())
+
+    hash_hex = hash_object.hexdigest()
+
+    return hash_hex
+
 class Field:
     def __init__(self, field_type, default=None):
         self.type = field_type
@@ -55,6 +66,18 @@ class BaseModel:
     def add_column(self, column_name, column_type):
         self.cursor.execute(f'ALTER TABLE {self.table_name} ADD COLUMN {column_name} {column_type}')
         self.connection.commit()
+    
+    def delete(self, **conditions):
+        if conditions:
+            fields = conditions.keys()
+            values = tuple(conditions.values())
+            conditions_str = ' AND '.join(f'{field} = ?' for field in fields)
+            self.cursor.execute(f'DELETE FROM {self.table_name} WHERE {conditions_str}', values)
+            self.connection.commit()
+        else:
+            raise ValueError("No conditions provided for delete operation")
+
+
 
 class Photo(BaseModel):
     user_id = Field('INTEGER')
