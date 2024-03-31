@@ -1,8 +1,9 @@
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, abort
 from flask import app
+from .security import Security
 
 bp = Blueprint('login', __name__)
 
@@ -16,18 +17,22 @@ def register():
     password_confirmation = request.json.get('password_confirmation', None)
 
     if not username or not email or not password or not password_confirmation:
+        print("Missing required fields")
         return jsonify({"msg": "Missing required fields"}), 400
 
     if password != password_confirmation:
+        print("Passwords do not match")
         return jsonify({"msg": "Passwords do not match"}), 400
 
     user_model = User()
     existing_user = user_model.select(username=username)
     if existing_user:
+        print("Username already exists")
         return jsonify({"msg": "Username already exists"}), 400
 
     existing_email = user_model.select(email=email)
     if existing_email:
+        print("Email already exists")
         return jsonify({"msg": "Email already exists"}), 400
 
     try:
@@ -40,13 +45,15 @@ def register():
 
 @bp.route('/login', methods=['POST'])
 def login():
+    print(type(app))
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     user_model = User()
     user = user_model.select(username=username)
 
-    if user and check_password_hash(user[0][2], password):  # user[0][2] is the password field
-        access_token = create_access_token(identity=username)
+    print("user: ", user)
+    if user and check_password_hash(user[0][3], password):  # user[0][2] is the password field
+        access_token = Security.create_jwt(user[0][1], user[0][0])
         
         user_model.update(updates={'jwt': access_token}, conditions={'username': username})
 
@@ -54,6 +61,8 @@ def login():
         for user in users:
             print(user) 
 
-        return jsonify(access_token=access_token), 200
+        return jsonify({"msg": "OK", "access_token": access_token}), 200
 
-    return jsonify({"msg": "Bad username or password"}), 401
+    print("Bad username or password")
+    abort(401, description="Bad username or password")
+    # return jsonify({"msg": "Bad username or password"}), 401

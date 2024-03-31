@@ -4,6 +4,8 @@ import os
 from werkzeug.utils import secure_filename
 from flask import current_app as app
 from PIL import Image
+from .security import Security
+from .authenticate import Authenticate as Auth
 
 bp = Blueprint('test', __name__)
 
@@ -16,6 +18,9 @@ def bye():
 
 @bp.route('/upload_photo', methods=['POST'])
 def upload_photo():
+    user = Auth.authenticate(request)
+
+    print("user:", user)
     if 'file' not in request.files:
         return 'No file part'
     file = request.files['file']
@@ -27,18 +32,21 @@ def upload_photo():
             with Image.open(file.stream) as img:
                 pass  # Just opening to validate
         except Exception as e:
+            print("The file is not an image")
             abort(400, description="The file is not an image")
         file.stream.seek(0)  # Reset file pointer to the beginning
         filename = secure_filename(file.filename)
-        username = 'jareste'
+        username = user[0][0]
         unique_filename = f"{username}_{filename}"
         hashed_filename = hash_to_db(unique_filename) + ".png"
         upload_path = os.path.join(app.config['UPLOAD_FOLDER'], hashed_filename)
         os.makedirs(os.path.dirname(upload_path), exist_ok=True)
         file.save(upload_path)
         photo = Photo()
-        photo.insert(user_id='jareste', url=upload_path)
+        photo.insert(user_id=username, url=upload_path)
         print("photo saved at: ", upload_path)
+        print("username: ", username)
+        return jsonify({"msg": "File uploaded successfully", "url": f"/uploads/{hashed_filename}"})
         return 'File uploaded successfully'
 
 @bp.route('/delete_photo/<photo_url>', methods=['DELETE'])

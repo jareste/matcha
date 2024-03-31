@@ -14,11 +14,14 @@ def hash_to_db(name):
     return hash_hex
 
 class Field:
-    def __init__(self, field_type, default=None):
+    def __init__(self, field_type, primary_key=False, autoincrement=False, default=None):
         self.type = field_type
+        self.primary_key = primary_key
+        self.autoincrement = autoincrement
         self.default = default
 
 class BaseModel:
+    id = Field('INTEGER', primary_key=True, autoincrement=True)
     def __init__(self, **kwargs):
         self.connection = sqlite3.connect('database.db')
         self.cursor = self.connection.cursor()
@@ -27,7 +30,7 @@ class BaseModel:
         self.create_table()
 
     def create_table(self):
-        fields_str = ', '.join(f'{name} {field.type}' for name, field in self.fields.items())
+        fields_str = ', '.join(f'{name} {field.type} PRIMARY KEY AUTOINCREMENT' if field.primary_key and field.autoincrement else f'{name} {field.type}' for name, field in self.fields.items())
         self.cursor.execute(f'CREATE TABLE IF NOT EXISTS {self.table_name} ({fields_str})')
         self.connection.commit()
 
@@ -90,6 +93,7 @@ class Photo(BaseModel):
     # photos = photo.select(user_id=user_id)
 
 class User(BaseModel):
+    id = Field('INTEGER', primary_key=True, autoincrement=True)
     username = Field('TEXT')
     email = Field('TEXT')
     password = Field('TEXT')
@@ -110,5 +114,5 @@ def insert_users_from_csv(file_name):
     for user in all_users:
         print(user)
 
-insert_users_from_csv('users.csv')
+# insert_users_from_csv('users.csv')
 

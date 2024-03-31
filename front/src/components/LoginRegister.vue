@@ -1,5 +1,6 @@
 <template>
     <b-container>
+      <p>{{ message }}</p>
       <b-row class="justify-content-center">
         <b-col cols="12" md="8">
           <b-card header="Vue.js Authentication" class="my-3">
@@ -34,6 +35,7 @@
   export default {
     data() {
       return {
+        message: '',
         loginForm: {
           username: '',
           password: ''
@@ -51,8 +53,13 @@
         axios.post('http://localhost:5000/login', this.loginForm)
           .then(response => {
             console.log(response.data);
+            localStorage.setItem('token', response.data.access_token);
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
+            this.message = 'Login successful. Redirecting to upload photo page...';
+            this.$router.push({ name: 'upload-photo' });
           })
           .catch(error => {
+            this.message = 'Error logging in: ' + error.response.data.description;
             console.error(error);
           });
       },
@@ -61,14 +68,16 @@
           username: this.registerForm.username,
           email: this.registerForm.email,
           password: this.registerForm.password,
-          password_confirmation: this.registerForm.passwordConfirmation,  // Change this line
+          password_confirmation: this.registerForm.passwordConfirmation,
         };
         console.log(user);
         axios.post('http://localhost:5000/register', user)
           .then(response => {
             console.log(response.data);
+            this.message = 'Registration successful. You can now login.';
           })
           .catch(error => {
+            this.message = 'Error registering: ' + error.response.data.description;
             console.error(error);
           });
       }

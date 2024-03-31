@@ -1,5 +1,6 @@
 <template>
   <div>
+    <p>{{ message }}</p>
     <form @submit.prevent="uploadPhoto">
       <input type="file" @change="onFileChange">
       <button type="submit">Upload</button>
@@ -24,6 +25,7 @@ export default {
       selectedFile: null,
       photoUrl: null,
       photoName: '',
+      message: '',
       deletePhotoName: ''
     }
   },
@@ -47,9 +49,11 @@ export default {
         })
 
         if (response.data) {
+          this.message = response.data.msg;
           this.photoName = this.selectedFile.name
         }
       } catch (error) {
+        this.message = error.response.data.description;
         console.error(error)
       }
     },
@@ -63,7 +67,11 @@ export default {
         try {
           await axios.delete('http://localhost:5000/delete_photo/' + this.deletePhotoName)
           this.deletePhotoName = ''
+          if (response.data) {
+            this.message = response.data.msg
+          }
         } catch (error) {
+          this.message = error.response.data.description
           console.log(error)
         }
       }
