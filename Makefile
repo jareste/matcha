@@ -3,6 +3,7 @@ all:
 down:
 	@docker compose down
 clean:
+	@rm back/database.db
 	@docker stop $$(docker ps -qa);
 	@docker rm $$(docker ps -qa);
 	@docker rmi -f $$(docker images -qa);
