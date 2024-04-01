@@ -1,15 +1,80 @@
 <template>
   <div>
     <nav>
-      <router-link to="/login-register">Login/Register</router-link> |
-      <router-link to="/upload-photo">Upload Photo</router-link>
+      <div class="links">
+        <router-link to="/login-register">Login/Register</router-link> |
+        <router-link to="/upload-photo">Upload Photo</router-link> |
+        <router-link to="/profile">Profile Page</router-link>
+      </div>
+      <div class="user-info" v-if="user.username && user.photoUrl">
+        <img :src="user.photoUrl" alt="User photo" class="user-photo">
+        <router-link to="/profile" class="username">{{ user.username }}</router-link>
+      </div>
     </nav>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
+import { inject } from 'vue';
+
 export default {
-  // ...
+  data() {
+    return {
+      user: {
+        username: '',
+        photoUrl: ''
+      }
+    }
+  },
+  created() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      axios.get('http://localhost:5000/getProfile')
+      .then(response => {
+        this.user.username = response.data.username;
+        this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    }
+  },
+  setup () {
+    const user = inject('user');
+    return { user };
+  }
+  
 }
 </script>
+
+<style scoped>
+nav {
+  display: flex;
+  justify-content: space-between;
+}
+
+.links {
+  flex-grow: 1;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.user-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+@media (max-width: 600px) {
+  .user-photo {
+    width: 30px;
+    height: 30px;
+  }
+}
+</style>

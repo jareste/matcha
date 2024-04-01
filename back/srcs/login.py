@@ -1,9 +1,10 @@
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
+from .models import User, Photo
 from flask import Blueprint, request, jsonify, abort
 from flask import app
 from .security import Security
+import os
 
 bp = Blueprint('login', __name__)
 
@@ -58,10 +59,16 @@ def login():
         user_model.update(updates={'jwt': access_token}, conditions={'username': username})
 
         users = user_model.select()
-        for user in users:
-            print(user) 
+        for u in users:
+            print(u) 
 
-        return jsonify({"msg": "OK", "access_token": access_token}), 200
+        photo_model = Photo()
+        photo = photo_model.select(user_id=user[0][0])
+        for p in photo:
+            print("photo: ", p)
+        photoUrl = os.path.basename(photo[0][2]) if photo and len(photo[0]) > 2 else None    
+
+        return jsonify({"msg": "OK", "access_token": access_token, "username": username, "photoUrl": photoUrl}), 200
 
     print("Bad username or password")
     abort(401, description="Bad username or password")

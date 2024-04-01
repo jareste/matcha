@@ -1,2 +1,4 @@
 __pycache__/
 back/database.db
+.DS_Store
+back/srcs/media/*

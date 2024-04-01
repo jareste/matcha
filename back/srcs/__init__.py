@@ -40,10 +40,11 @@ def create_app():
     jwt.init_app(app)
 
     with app.app_context():
-        from . import routes, test, models, login
+        from . import routes, test, models, login, profile
 
     app.register_blueprint(routes.bp)
     app.register_blueprint(test.bp)
     app.register_blueprint(login.bp)
+    app.register_blueprint(profile.bp)
 
     return app

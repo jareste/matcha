@@ -83,6 +83,7 @@ class BaseModel:
 
 
 class Photo(BaseModel):
+    id = Field('INTEGER', primary_key=True, autoincrement=True)
     user_id = Field('INTEGER')
     url = Field('TEXT')
     # To use::

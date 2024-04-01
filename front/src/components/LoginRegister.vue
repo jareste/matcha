@@ -31,7 +31,8 @@
   
   <script>
   import axios from 'axios';
-  
+  import { inject } from 'vue';
+
   export default {
     data() {
       return {
@@ -48,6 +49,10 @@
         }
       }
     },
+    setup () {
+      const user = inject('user');
+      return { user };
+    },
     methods: {
       login() {
         axios.post('http://localhost:5000/login', this.loginForm)
@@ -56,11 +61,14 @@
             localStorage.setItem('token', response.data.access_token);
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
             this.message = 'Login successful. Redirecting to upload photo page...';
-            this.$router.push({ name: 'upload-photo' });
+            
+            // updated with the inject property
+            this.user.username = response.data.username;
+            this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
           })
           .catch(error => {
-            this.message = 'Error logging in: ' + error.response.data.description;
             console.error(error);
+            this.message = 'Error logging in: ' + error.response.data.description;
           });
       },
       register() {
