@@ -65,7 +65,7 @@ export default {
     async deletePhoto() {
       if (this.deletePhotoName) {
         try {
-          await axios.delete('http://localhost:5000/delete_photo/' + this.deletePhotoName)
+          const response = await axios.delete('http://localhost:5000/delete_photo/' + this.deletePhotoName)
           this.deletePhotoName = ''
           if (response.data) {
             this.message = response.data.msg

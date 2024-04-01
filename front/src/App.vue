@@ -22,10 +22,10 @@ import { inject } from 'vue';
 export default {
   data() {
     return {
-      user: {
-        username: '',
-        photoUrl: ''
-      }
+      // user: {
+      //   username: '',
+      //   photoUrl: ''
+      // }
     }
   },
   created() {
@@ -64,6 +64,7 @@ nav {
 .user-info {
   display: flex;
   align-items: center;
+  margin-right: 20px;
 }
 
 .user-photo {

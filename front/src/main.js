@@ -4,19 +4,21 @@ import App from './App.vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import { BootstrapVue3 } from 'bootstrap-vue-3'
 import { createRouter, createWebHistory } from 'vue-router'
-import LoginRegister from './components/LoginRegister.vue'
-import UploadPhoto from './components/UploadPhoto.vue'
-import ProfilePage from './components/ProfilePage.vue'
+import routes from './routes'
 
 if (localStorage.getItem('token')) {
-    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
-}
+    try {
+        const response = await axios.get('http://localhost:5000/getProfile');
+        if (response.data.username) {
+            axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
+        } else {
+            localStorage.removeItem('token');
+        }
+    } catch (error) {
+        localStorage.removeItem('token');
+    }
 
-const routes = [
-    { path: '/login-register', component: LoginRegister },
-    { path: '/upload-photo', component: UploadPhoto },
-    { path: '/profile', component: ProfilePage }
-]
+}
 
 const router = createRouter({
     history: createWebHistory(),
