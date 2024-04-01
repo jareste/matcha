@@ -19,22 +19,26 @@ def register():
 
     if not username or not email or not password or not password_confirmation:
         print("Missing required fields")
-        return jsonify({"msg": "Missing required fields"}), 400
+        abort(400, description="Missing required fields")
+        # return jsonify({"msg": "Missing required fields"}), 400
 
     if password != password_confirmation:
         print("Passwords do not match")
-        return jsonify({"msg": "Passwords do not match"}), 400
+        abort(400, description="Passwords do not match")
+        # return jsonify({"msg": "Passwords do not match"}), 400
 
     user_model = User()
     existing_user = user_model.select(username=username)
     if existing_user:
         print("Username already exists")
-        return jsonify({"msg": "Username already exists"}), 400
+        abort(400, description="Username already exists")
+        # return jsonify({"msg": "Username already exists"}), 400
 
     existing_email = user_model.select(email=email)
     if existing_email:
         print("Email already exists")
-        return jsonify({"msg": "Email already exists"}), 400
+        abort(400, description="Email already exists")
+        # return jsonify({"msg": "Email already exists"}), 400
 
     try:
         hashed_password = generate_password_hash(password)
@@ -42,7 +46,8 @@ def register():
 
         return jsonify({"msg": "User created successfully"}), 201
     except Exception as e:
-        return jsonify({"msg": str(e)}), 500
+        abort(500, description=str(e))
+        # return jsonify({"msg": str(e)}), 500
 
 @bp.route('/login', methods=['POST'])
 def login():

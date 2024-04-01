@@ -21,6 +21,6 @@ def getProfile():
     photo = photo_model.select(user_id=user_id)
     for p in photo:
         print("photo: ", p)
-    photoUrl = os.path.basename(photo[0][2]) if photo and len(photo[0]) > 2 else None
+    photoUrl = os.path.basename(photo[0][2]) if photo and len(photo[0]) > 2 else 'default.png'
     print("profile_pic: ", photoUrl)
     return jsonify({"username": user[1], "email": user[2], "photoUrl": photoUrl})
