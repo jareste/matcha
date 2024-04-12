@@ -8,7 +8,9 @@ import routes from './routes'
 
 if (localStorage.getItem('token')) {
     try {
+        axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');        
         const response = await axios.get('http://localhost:5000/getProfile');
+        console.log(response.data);
         if (response.data.username) {
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
         } else {
