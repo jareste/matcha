@@ -40,6 +40,11 @@ def register():
         abort(400, description="Email already exists")
         # return jsonify({"msg": "Email already exists"}), 400
 
+    secure, msg = Security.check_password(password)
+    if secure is False:
+        print(msg)
+        abort(400, description=msg) 
+
     try:
         hashed_password = generate_password_hash(password)
         user_model.insert(username=username, email=email, password=hashed_password)
