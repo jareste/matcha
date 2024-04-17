@@ -20,6 +20,7 @@ def create_app():
             "code": e.code,
             "name": e.name,
             "description": e.description,
+            "error": True,
         }
 
         # If the original response data was not None, include it in the new response data
@@ -27,7 +28,7 @@ def create_app():
             new_response_data['original_response'] = response_data
 
         new_response = jsonify(new_response_data)
-        new_response.status_code = response.status_code
+        # new_response.status_code = response.status_code
         return new_response
 
 

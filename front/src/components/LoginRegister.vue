@@ -81,12 +81,16 @@
         console.log(user);
         axios.post('http://localhost:5000/register', user)
           .then(response => {
+            if (response.data.error) {
+              this.message = 'Error registering: ' + response.data.description;
+              return;
+            }
             console.log(response.data);
             this.message = 'Registration successful. You can now login.';
           })
           .catch(error => {
             this.message = 'Error registering: ' + error.response.data.description;
-            console.error(error);
+            console.log(error);
           });
       }
     }
