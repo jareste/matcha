@@ -20,7 +20,7 @@ def bye():
 def upload_photo():
     user = Auth.authenticate(request)
 
-    print("user:", user)
+    # print("user:", user)
 
     for i in range(5):  # Assuming a maximum of 5 files
         file_key = f'image{i}'
@@ -30,7 +30,7 @@ def upload_photo():
         if file.filename == '':
             continue
         if file:
-            print(file.filename)
+            print('uploaded:', file.filename)
             try:
                 with Image.open(file.stream) as img:
                     pass  # Just opening to validate

@@ -5,14 +5,14 @@ from .models import User
 class Authenticate:
     def authenticate(request):
         auth_header = request.headers.get('Authorization')
-        print("auth_header: ", auth_header)
+        # print("auth_header: ", auth_header)
         if not auth_header:
             print("No token provided")
             abort(401, description="No token provided")
         if auth_header.startswith('Bearer '):
             token = auth_header[7:]
 
-        print(f"token:{token}")
+        # print(f"token:{token}")
         try:
             username, user_id = Security.decode_jwt(token)
         except Exception as e:
