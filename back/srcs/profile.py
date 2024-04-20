@@ -24,3 +24,15 @@ def getProfile():
     photoUrl = os.path.basename(photo[0][2]) if photo and len(photo[0]) > 2 else 'default.png'
     print("profile_pic: ", photoUrl)
     return jsonify({"username": user[1], "email": user[2], "photoUrl": photoUrl})
+
+@bp.route('/user_photos', methods=['GET'])
+def user_photos():
+    user = Auth.authenticate(request)
+    user_id = user[0][0]
+
+    photo_model = Photo()
+    photos = photo_model.select(user_id=user_id)
+
+    photo_urls = [os.path.basename(photo[2]) for photo in photos if len(photo) > 2]
+    print('photos:', photo_urls)
+    return jsonify({"photos": photo_urls})

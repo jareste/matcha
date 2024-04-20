@@ -76,7 +76,7 @@ def login():
         photo = photo_model.select(user_id=user[0][0])
         for p in photo:
             print("photo: ", p)
-        photoUrl = os.path.basename(photo[0][2]) if photo and len(photo[0]) > 2 else None    
+        photoUrl = os.path.basename(photo[0][2]) if photo and len(photo[0]) > 2 else 'Default.png'   
 
         return jsonify({"msg": "OK", "access_token": access_token, "username": username, "photoUrl": photoUrl}), 200
 

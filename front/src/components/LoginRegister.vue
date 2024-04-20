@@ -57,6 +57,10 @@
       login() {
         axios.post('http://localhost:5000/login', this.loginForm)
           .then(response => {
+            if (response.data.error) {
+              this.message = 'Error logging in: ' + response.data.description;
+              return;
+            }
             console.log(response.data);
             localStorage.setItem('token', response.data.access_token);
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
@@ -78,7 +82,7 @@
           password: this.registerForm.password,
           password_confirmation: this.registerForm.passwordConfirmation,
         };
-        console.log(user);
+        console.log('enviat:',user);
         axios.post('http://localhost:5000/register', user)
           .then(response => {
             if (response.data.error) {

@@ -21,33 +21,36 @@ def upload_photo():
     user = Auth.authenticate(request)
 
     print("user:", user)
-    if 'file' not in request.files:
-        return 'No file part'
-    file = request.files['file']
-    if file.filename == '':
-        return 'No selected file'
-    if file:
-        print(file.filename)
-        try:
-            with Image.open(file.stream) as img:
-                pass  # Just opening to validate
-        except Exception as e:
-            print("The file is not an image")
-            abort(400, description="The file is not an image")
-        file.stream.seek(0)  # Reset file pointer to the beginning
-        filename = secure_filename(file.filename)
-        user_id = user[0][0]
-        unique_filename = f"{user_id}_{filename}"
-        hashed_filename = hash_to_db(unique_filename) + ".png"
-        upload_path = os.path.join(app.config['UPLOAD_FOLDER'], hashed_filename)
-        os.makedirs(os.path.dirname(upload_path), exist_ok=True)
-        file.save(upload_path)
-        photo = Photo()
-        photo.insert(user_id=user_id, url=upload_path)
-        print("photo saved at: ", upload_path)
-        print("username: ", user_id)
-        return jsonify({"msg": "File uploaded successfully", "url": f"/uploads/{hashed_filename}"})
-        return 'File uploaded successfully'
+
+    for i in range(5):  # Assuming a maximum of 5 files
+        file_key = f'image{i}'
+        if file_key not in request.files:
+            continue
+        file = request.files[file_key]
+        if file.filename == '':
+            continue
+        if file:
+            print(file.filename)
+            try:
+                with Image.open(file.stream) as img:
+                    pass  # Just opening to validate
+            except Exception as e:
+                print("The file is not an image")
+                abort(400, description="The file is not an image")
+            file.stream.seek(0)  # Reset file pointer to the beginning
+            filename = secure_filename(file.filename)
+            user_id = user[0][0]
+            unique_filename = f"{user_id}_{filename}"
+            hashed_filename = hash_to_db(unique_filename) + ".png"
+            upload_path = os.path.join(app.config['UPLOAD_FOLDER'], hashed_filename)
+            os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+            file.save(upload_path)
+            photo = Photo()
+            photo.insert(user_id=user_id, url=upload_path)
+            print("photo saved at: ", upload_path)
+            print("username: ", user_id)
+
+    return jsonify({"msg": "Files uploaded successfully"})
 
 @bp.route('/delete_photo/<photo_url>', methods=['DELETE'])
 def delete_photo(photo_url):
