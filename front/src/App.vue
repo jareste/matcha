@@ -34,9 +34,7 @@ export default {
       axios.get('http://localhost:5000/getProfile')
       .then(response => {
         this.user.username = response.data.username;
-        // if (response.data.photoUrl) {
           this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
-        // }
       })
       .catch(error => {
         console.log(error);
