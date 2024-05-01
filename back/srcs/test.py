@@ -6,6 +6,7 @@ from flask import current_app as app
 from PIL import Image
 from .security import Security
 from .authenticate import Authenticate as Auth
+import time
 
 bp = Blueprint('test', __name__)
 
@@ -42,7 +43,7 @@ def upload_photo():
             file.stream.seek(0)  # Reset file pointer to the beginning
             filename = secure_filename(file.filename)
             user_id = user[0][0]
-            unique_filename = f"{user_id}_{filename}"
+            unique_filename = f"{user_id}_{filename}_{time.time()}" 
             hashed_filename = hash_to_db(unique_filename) + ".png"
             upload_path = os.path.join(app.config['UPLOAD_FOLDER'], hashed_filename)
             os.makedirs(os.path.dirname(upload_path), exist_ok=True)
