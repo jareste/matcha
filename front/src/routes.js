@@ -1,6 +1,7 @@
 import LoginRegister from './components/LoginRegister.vue'
 import UploadPhoto from './components/UploadPhoto.vue'
 import ProfilePage from './components/ProfilePage.vue'
+import Main from './components/Main.vue'
 
 function isAuthenticated() {
     const token = localStorage.getItem('token');
@@ -40,6 +41,17 @@ const routes = [
                 next('/login-register');
             }
         }
+    },
+    { 
+        path: '/', 
+        component: Main,
+        // beforeEnter: (to, from, next) => {
+        //     if (!isAuthenticated()) {
+        //         next();
+        //     } else {
+        //         next('/profile');
+        //     }
+        // }
     }
 ]
 

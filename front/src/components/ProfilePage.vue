@@ -18,7 +18,6 @@
 </template>
 
 <style scoped>
-/* Add your existing styles here */
 
 .profile-page {
     display: flex;

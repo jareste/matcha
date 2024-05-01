@@ -18,6 +18,8 @@ def bye():
 
 @bp.route('/upload_photo', methods=['POST'])
 def upload_photo():
+    print("upload_photo------------------------------------------------------------")
+    print(request)
     user = Auth.authenticate(request)
 
     # print("user:", user)
@@ -46,7 +48,13 @@ def upload_photo():
             os.makedirs(os.path.dirname(upload_path), exist_ok=True)
             file.save(upload_path)
             photo = Photo()
+            photos = photo.select(user_id=user_id)
+            if i < len(photos):
+                os.remove(photos[i][2])
+                photo.delete(id=photos[i][0])
+
             photo.insert(user_id=user_id, url=upload_path)
+            photo.connection.commit()
             print("photo saved at: ", upload_path)
             print("username: ", user_id)
 
