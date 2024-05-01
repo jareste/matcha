@@ -4,7 +4,8 @@
       <div class="links">
         <router-link to="/login-register">Login/Register</router-link> |
         <router-link to="/upload-photo">Upload Photo</router-link> |
-        <router-link to="/profile">Profile Page</router-link>
+        <router-link to="/profile">Profile Page</router-link> |
+        <router-link to="/match">Match</router-link>
       </div>
       <div class="user-info" v-if="user.username && user.photoUrl">
         <img :src="user.photoUrl" alt="User photo" class="user-photo">
@@ -12,20 +13,31 @@
       </div>
     </nav>
     <router-view></router-view>
+    <ChatComponent />
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import { inject } from 'vue';
+import ChatComponent from './components/ChatComponent.vue';
 
 export default {
+  components: {
+    ChatComponent
+  },
   data() {
     return {
+      isChatOpen: false,
       // user: {
       //   username: '',
       //   photoUrl: ''
       // }
+    }
+  },
+  methods: {
+    toggleChat() {
+      this.isChatOpen = !this.isChatOpen;
     }
   },
   created() {
