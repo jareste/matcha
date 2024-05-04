@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 from werkzeug.exceptions import HTTPException
 from flask import jsonify
+from flask_socketio import SocketIO, send
 
 jwt = JWTManager()
 
@@ -34,9 +35,18 @@ def create_app():
 
     CORS(app)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+
+    app.config['SECRET_KEY'] = 'secret!'#os.getenv('SECRET_KEY')
+    socketio = SocketIO(app, cors_allowed_origins="*")
+    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
     app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # Change this!
     app.config['UPLOAD_FOLDER'] = app.root_path + '/media'
+
+    @socketio.on('message')
+    def handleMessage(msg):
+        print('Message: ' + msg)
+        send(msg, broadcast=True)
+
 
     jwt.init_app(app)
 

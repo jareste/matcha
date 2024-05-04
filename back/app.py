@@ -4,7 +4,7 @@ from srcs import create_app
 # from srcs.database import db
 
 app = create_app()
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 
 # db.init_app(app)
 
