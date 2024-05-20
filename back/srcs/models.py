@@ -98,7 +98,20 @@ class User(BaseModel):
     username = Field('TEXT')
     email = Field('TEXT')
     password = Field('TEXT')
+    Photo = Field('TEXT', default='')
     jwt = Field('TEXT', default='')
+    friends = Field('TEXT', default='')
+
+    def add_friend(self, friend_id):
+        friends = self.select(id=self.id)[0][-1]
+        if not friends:
+            friends = []
+        else:
+            friends = friends.split(',')
+        if friend_id not in friends:
+            friends.append(friend_id)
+            self.update({'friends': ','.join(friends)}, {'id': self.id})
+
 
 def insert_users_from_csv(file_name):
     with open(file_name, 'r') as file:

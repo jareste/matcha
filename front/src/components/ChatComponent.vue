@@ -4,16 +4,28 @@
             Chat
         </div>
         <div class="chat-content" v-if="isChatOpen">
-            <div v-for="message in messages" :key="message.id">
-                {{ message.text }}
+            <div class="friends-list" v-if="!selectedFriend">
+                <div v-for="friend in friends" :key="friend.id" @click="selectFriend(friend)">
+                    {{ friend.username }}
+                </div>
+                <div v-if="!friends || friends.length === 0">
+                    Add some friends to start chatting
+                </div>
             </div>
-            <input v-model="newMessage" @keyup.enter="sendMessage">
+            <div v-else>
+                <button @click="selectedFriend = null">Back to friends list</button>
+                <div v-for="message in messages" :key="message.id">
+                    {{ message.text }}
+                </div>
+                <input v-model="newMessage" @keyup.enter="sendMessage">
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import io from 'socket.io-client';
+import axios from 'axios';
 
 export default {
     data() {
@@ -22,22 +34,40 @@ export default {
             newMessage: '',
             messages: [],
             socket: null,
+            friends: [],
+            selectedFriend: null,
         };
     },
     created() {
         this.socket = io('http://localhost:5000');
         this.socket.on('message', (message) => {
-            this.messages.push({ id: this.messages.length, text: message });
-            console.log(this.messages);
+            this.messages.push({ id: this.messages.length, text: message.message });
         });
+        this.fetchFriends();
     },
     methods: {
         toggleChat() {
             this.isChatOpen = !this.isChatOpen;
         },
         sendMessage() {
-            this.socket.emit('message', this.newMessage);
-            this.newMessage = '';
+            if (this.selectedFriend) {
+                this.socket.emit('message', {
+                    sender_id: this.userId,
+                    receiver_id: this.selectedFriend.id,
+                    message: this.newMessage,
+                });
+                this.newMessage = '';
+            }
+        },
+        fetchFriends() {
+            axios.get('http://localhost:5000/friends', { user_id: this.userId })
+                .then(response => {
+                    this.friends = response.data.friends;
+                });
+        },
+        selectFriend(friend) {
+            this.selectedFriend = friend;
+            this.messages = [];
         },
     },
 };
@@ -61,5 +91,9 @@ export default {
 .chat-content {
     height: 300px;
     overflow-y: auto;
+}
+
+.friends-list {
+    padding: 10px;
 }
 </style>

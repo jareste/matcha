@@ -78,6 +78,8 @@ def login():
             print("photo: ", p)
         photoUrl = os.path.basename(photo[0][2]) if photo and len(photo[0]) > 2 else 'Default.png'   
 
+
+        # user[0].add_friend("jareste")
         return jsonify({"msg": "OK", "access_token": access_token, "username": username, "photoUrl": photoUrl}), 200
 
     print("Bad username or password")

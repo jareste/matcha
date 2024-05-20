@@ -1,5 +1,5 @@
 <template>
-    <div class="main" style="background-color: #ff00cc;">
+    <div class="main" style="background-color: #688952;">
         <p>As you will see graphic design is our main objective and we definately love it.</p>
     </div>
 </template>
@@ -20,7 +20,7 @@ export default {
     height: 100vh;
     font-size: 6rem;
     font-weight: 700;
-    color: #940094;
+    color: #ffffff;
 }
 
 </style>

@@ -6,6 +6,8 @@ from flask import jsonify
 from flask_socketio import SocketIO, send
 
 jwt = JWTManager()
+socketio = SocketIO(Flask(__name__), cors_allowed_origins="*")
+
 
 def create_app():
     app = Flask(__name__)
@@ -37,25 +39,25 @@ def create_app():
 
 
     app.config['SECRET_KEY'] = 'secret!'#os.getenv('SECRET_KEY')
-    socketio = SocketIO(app, cors_allowed_origins="*")
     # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
     app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # Change this!
     app.config['UPLOAD_FOLDER'] = app.root_path + '/media'
 
-    @socketio.on('message')
-    def handleMessage(msg):
-        print('Message: ' + msg)
-        send(msg, broadcast=True)
+    # @socketio.on('message')
+    # def handleMessage(msg):
+    #     print('Message: ' + msg)
+    #     send(msg, broadcast=True)
 
 
     jwt.init_app(app)
 
     with app.app_context():
-        from . import routes, test, models, login, profile
+        from . import routes, test, models, login, profile, chat
 
     app.register_blueprint(routes.bp)
     app.register_blueprint(test.bp)
     app.register_blueprint(login.bp)
     app.register_blueprint(profile.bp)
+    app.register_blueprint(chat.bp)
 
     return app

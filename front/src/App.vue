@@ -13,7 +13,7 @@
       </div>
     </nav>
     <router-view></router-view>
-    <ChatComponent />
+    <ChatComponent v-if="isProfileLoaded" />
   </div>
 </template>
 
@@ -29,6 +29,7 @@ export default {
   data() {
     return {
       isChatOpen: false,
+      isProfileLoaded: false,
       // user: {
       //   username: '',
       //   photoUrl: ''
@@ -45,9 +46,10 @@ export default {
     if (token) {
       axios.get('http://localhost:5000/getProfile')
       .then(response => {
-        this.user.username = response.data.username;
+          this.user.username = response.data.username;
           this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
-      })
+          this.isProfileLoaded = true;
+        })
       .catch(error => {
         console.log(error);
       });
