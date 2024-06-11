@@ -5,8 +5,15 @@ from flask import Blueprint, request, jsonify, abort
 from flask import app
 from .security import Security
 import os
+import re
 
 bp = Blueprint('login', __name__)
+
+def is_valid_email(email):
+    email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    match = re.match(email_regex, email)
+    return bool(match)
+
 
 @bp.route('/register', methods=['POST'])
 def register():
@@ -26,6 +33,9 @@ def register():
         print("Passwords do not match")
         abort(400, description="Passwords do not match")
         # return jsonify({"msg": "Passwords do not match"}), 400
+
+    if not is_valid_email(email):
+        abort(400, description="Email is not valid.")
 
     user_model = User()
     existing_user = user_model.select(username=username)
