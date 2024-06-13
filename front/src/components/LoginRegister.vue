@@ -66,9 +66,14 @@
             axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
             this.message = 'Login successful. Redirecting to upload photo page...';
             
-            // updated with the inject property
+            /**/
             this.user.username = response.data.username;
             this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
+
+            /**/
+            this.$router.push('/profile').catch(err => {
+              console.error('Navigation error: ', err);
+            });
           })
           .catch(error => {
             console.error(error);
