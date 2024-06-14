@@ -64,7 +64,7 @@ export default {
     data() {
         return {
             user: {
-                username: '',
+                username: '',//TODO no ensena ok el user y la foto
                 photoUrl: ''
             },
             uploads: Array.from({ length: 5 }, () => ({ file: null, preview: null })) // Initialize an array of 5 unique upload slots
@@ -95,19 +95,14 @@ export default {
             try {
                 axios.get('http://localhost:5000/user_photos')
                 .then(response => {
-                    console.log(response.data);
+                    console.log('aquiiiiiiiiiii', response.data);
                     response.data.photos.forEach((photo, index) => {
                         console.log('photo:', photo);
                         this.uploads[index].preview = 'http://localhost:5000/uploads/' + photo;
                     });
-                    // this.user.username = response.data.username;
-                    // this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
+                    this.user.username = response.data.username;
+                    this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
                 });
-                // // console.log(response.data);
-                // // response.data.photos.forEach((photo, index) => {
-                // //     console.log('photo:', photo.url);
-                // //     this.uploads[index].preview = photo.url;
-                // });
             } catch (error) {
                 console.error(error);
             }

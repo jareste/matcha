@@ -83,17 +83,19 @@ export default {
 }
 
 .chat-header {
-    background-color: #f5f5f5;
+    background-color: #f500f5;
     padding: 10px;
     cursor: pointer;
 }
 
 .chat-content {
+    background-color: #00f5f5;
     height: 300px;
     overflow-y: auto;
 }
 
 .friends-list {
+    background-color: #00f5f5;
     padding: 10px;
 }
 </style>

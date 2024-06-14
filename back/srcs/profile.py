@@ -35,4 +35,6 @@ def user_photos():
 
     photo_urls = [os.path.basename(photo[2]) for photo in photos if len(photo) > 2]
     print('photos:', photo_urls)
-    return jsonify({"photos": photo_urls})
+    photoUrl = os.path.basename(photos[0][2]) if photos and len(photos[0]) > 2 else 'default.png'
+
+    return jsonify({"photos": photo_urls, "username": user[0][1], "photoUrl": photoUrl})
