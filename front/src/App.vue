@@ -13,7 +13,7 @@
       </div>
     </nav>
     <router-view></router-view>
-    <ChatComponent v-if="isProfileLoaded" />
+    <ChatComponent v-if="user.isProfileLoaded" />
   </div>
 </template>
 
@@ -29,7 +29,6 @@ export default {
   data() {
     return {
       isChatOpen: false,
-      isProfileLoaded: false,
       // user: {
       //   username: '',
       //   photoUrl: ''
@@ -48,7 +47,7 @@ export default {
       .then(response => {
           this.user.username = response.data.username;
           this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
-          this.isProfileLoaded = true;
+          this.user.isProfileLoaded = true;
         })
       .catch(error => {
         console.log(error);
@@ -57,6 +56,7 @@ export default {
   },
   setup () {
     const user = inject('user');
+    // let isProfileLoaded = inject('isProfileLoaded');
     return { user };
   }
   

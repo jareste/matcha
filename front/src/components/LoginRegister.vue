@@ -69,6 +69,8 @@
             /**/
             this.user.username = response.data.username;
             this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
+            this.user.isProfileLoaded = true;
+            console.log('is loaded?',this.isProfileLoaded);
 
             /**/
             this.$router.push('/profile').catch(err => {
@@ -87,7 +89,6 @@
           password: this.registerForm.password,
           password_confirmation: this.registerForm.passwordConfirmation,
         };
-        console.log('enviat:',user);
         axios.post('http://localhost:5000/register', user)
           .then(response => {
             if (response.data.error) {

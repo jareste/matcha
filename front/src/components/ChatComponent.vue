@@ -60,7 +60,7 @@ export default {
             }
         },
         fetchFriends() {
-            axios.get('http://localhost:5000/friends', { user_id: this.userId })
+            axios.get('http://localhost:5000/matches_chat', { user_id: this.userId })
                 .then(response => {
                     this.friends = response.data.friends;
                 });

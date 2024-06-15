@@ -102,6 +102,7 @@ export default {
                     });
                     this.user.username = response.data.username;
                     this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
+                    this.isProfileLoaded = true;
                 });
             } catch (error) {
                 console.error(error);

@@ -52,12 +52,13 @@ def create_app():
     jwt.init_app(app)
 
     with app.app_context():
-        from . import routes, test, models, login, profile, chat
+        from . import routes, test, models, login, profile, chat, match
 
     app.register_blueprint(routes.bp)
     app.register_blueprint(test.bp)
     app.register_blueprint(login.bp)
     app.register_blueprint(profile.bp)
     app.register_blueprint(chat.bp)
+    app.register_blueprint(match.bp)
 
     return app

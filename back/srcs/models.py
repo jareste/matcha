@@ -93,7 +93,6 @@ class BaseModel:
             raise ValueError("No conditions provided for delete operation")
 
 
-
 class Photo(BaseModel):
     id = Field('INTEGER', primary_key=True, autoincrement=True)
     user_id = Field('INTEGER')
@@ -106,13 +105,124 @@ class User(BaseModel):
     password = Field('TEXT')
     photo = Field('TEXT', default='')
     jwt = Field('TEXT', default='')
-    friends = Field('TEXT', default='')
+    matches = Field('TEXT', default='')
 
-    def add_friend(self, friend_id):
-        friends = self.friends.split(',') if self.friends else []
-        if friend_id not in friends:
-            friends.append(friend_id)
-            self.update({'friends': ','.join(friends)}, {'id': self.id})
+    def add_match(self, match_id):
+        matches = self.matches.split(',') if self.matches else []
+        if match_id not in matches:
+            matches.append(match_id)
+            self.update({'matches': ','.join(matches)}, {'id': self.id})
+
+    def like(self, user_id):
+        self.add_match(user_id)
+        other_user = User().select(id=user_id)[0]
+        if str(self.id) in other_user.matches.split(','):
+            return True  # It's a match!
+        return False
+
+
+
+
+# class Field:
+#     def __init__(self, field_type, primary_key=False, autoincrement=False, default=None):
+#         self.type = field_type
+#         self.primary_key = primary_key
+#         self.autoincrement = autoincrement
+#         self.default = default
+
+# class BaseModel:
+#     id = Field('INTEGER', primary_key=True, autoincrement=True)
+    
+#     def __init__(self, **kwargs):
+#         self.connection = sqlite3.connect('database.db')
+#         self.cursor = self.connection.cursor()
+#         self.table_name = self.__class__.__name__.lower()
+#         self.fields = {name: field for name, field in self.__class__.__dict__.items() if isinstance(field, Field)}
+#         self.create_table()
+        
+#         for key, value in kwargs.items():
+#             setattr(self, key, value)
+
+#     def create_table(self):
+#         fields_str = ', '.join(f'{name} {field.type} PRIMARY KEY AUTOINCREMENT' if field.primary_key and field.autoincrement else f'{name} {field.type}' for name, field in self.fields.items())
+#         self.cursor.execute(f'CREATE TABLE IF NOT EXISTS {self.table_name} ({fields_str})')
+#         self.connection.commit()
+
+#     def insert(self, **kwargs):
+#         fields_str = ', '.join(kwargs.keys())
+#         values_str = ', '.join('?' for _ in kwargs.values())
+#         values = tuple(kwargs.values())
+#         self.cursor.execute(f'INSERT INTO {self.table_name} ({fields_str}) VALUES ({values_str})', values)
+#         self.connection.commit()
+
+#     def select(self, **conditions):
+#         if conditions:
+#             fields = conditions.keys()
+#             values = tuple(conditions.values())
+#             conditions_str = ' AND '.join(f'{field} = ?' for field in fields)
+#             self.cursor.execute(f'SELECT * FROM {self.table_name} WHERE {conditions_str}', values)
+#         else:
+#             self.cursor.execute(f'SELECT * FROM {self.table_name}')
+        
+#         rows = self.cursor.fetchall()
+#         return [self._instantiate_from_row(row) for row in rows]
+
+#     def update(self, updates, conditions):
+#         updates_str = ', '.join(f'{field} = ?' for field in updates.keys())
+#         conditions_str = ' AND '.join(f'{field} = ?' for field in conditions.keys())
+#         values = tuple(list(updates.values()) + list(conditions.values()))
+#         self.cursor.execute(f'UPDATE {self.table_name} SET {updates_str} WHERE {conditions_str}', values)
+#         self.connection.commit()
+
+#     def _instantiate_from_row(self, row):
+#         obj = self.__class__()
+#         for idx, (name, field) in enumerate(self.fields.items()):
+#             setattr(obj, name, row[idx])
+#         return obj
+
+#     def get_fields(self):
+#         self.cursor.execute(f'PRAGMA table_info({self.table_name})')
+#         return self.cursor.fetchall()
+    
+#     def select_all(self):
+#         self.cursor.execute(f'SELECT * FROM {self.table_name}')
+#         return self.cursor.fetchall()
+
+#     def add_column(self, column_name, column_type):
+#         self.cursor.execute(f'ALTER TABLE {self.table_name} ADD COLUMN {column_name} {column_type}')
+#         self.connection.commit()
+    
+#     def delete(self, **conditions):
+#         if conditions:
+#             fields = conditions.keys()
+#             values = tuple(conditions.values())
+#             conditions_str = ' AND '.join(f'{field} = ?' for field in fields)
+#             self.cursor.execute(f'DELETE FROM {self.table_name} WHERE {conditions_str}', values)
+#             self.connection.commit()
+#         else:
+#             raise ValueError("No conditions provided for delete operation")
+
+
+
+# class Photo(BaseModel):
+#     id = Field('INTEGER', primary_key=True, autoincrement=True)
+#     user_id = Field('INTEGER')
+#     url = Field('TEXT')
+
+# class User(BaseModel):
+#     id = Field('INTEGER', primary_key=True, autoincrement=True)
+#     username = Field('TEXT')
+#     email = Field('TEXT')
+#     password = Field('TEXT')
+#     photo = Field('TEXT', default='')
+#     jwt = Field('TEXT', default='')
+#     matches = Field('TEXT', default='')
+
+#     def add_match(self, match_id):
+#         matches = self.matches.split(',') if self.matches else []
+#         if match_id not in matches:
+#             matches.append(match_id)
+#             self.update({'matches': ','.join(matches)}, {'id': self.id})
 
 
 def insert_users_from_csv(file_name):

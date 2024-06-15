@@ -31,7 +31,7 @@ const app = createApp(App)
 
 const user = reactive({
     username: '',
-    photoUrl: ''
+    photoUrl: '',
 });
 app.provide('user', user);
 
