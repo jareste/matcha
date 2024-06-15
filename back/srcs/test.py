@@ -42,7 +42,7 @@ def upload_photo():
                 abort(400, description="The file is not an image")
             file.stream.seek(0)  # Reset file pointer to the beginning
             filename = secure_filename(file.filename)
-            user_id = user[0][0]
+            user_id = user[0].id
             unique_filename = f"{user_id}_{filename}_{time.time()}" 
             hashed_filename = hash_to_db(unique_filename) + ".png"
             upload_path = os.path.join(app.config['UPLOAD_FOLDER'], hashed_filename)
@@ -51,8 +51,8 @@ def upload_photo():
             photo = Photo()
             photos = photo.select(user_id=user_id)
             if i < len(photos):
-                os.remove(photos[i][2])
-                photo.delete(id=photos[i][0])
+                os.remove(photos[i].url)
+                photo.delete(id=photos[i].id)
 
             photo.insert(user_id=user_id, url=upload_path)
             photo.connection.commit()

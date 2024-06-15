@@ -64,34 +64,66 @@ def register():
         abort(500, description=str(e))
         # return jsonify({"msg": str(e)}), 500
 
+# @bp.route('/login', methods=['POST'])
+# def login():
+#     print(type(app))
+#     username = request.json.get('username', None)
+#     password = request.json.get('password', None)
+#     user_model = User()
+#     user = user_model.select(username=username)
+
+
+#     print("user: ", user.id())
+#     if user and check_password_hash(user[0][3], password):  # user[0][2] is the password field
+#         access_token = Security.create_jwt(user[0][1], user[0][0])
+        
+#         user_model.update(updates={'jwt': access_token}, conditions={'username': username})
+
+#         users = user_model.select()
+#         for u in users:
+#             print(u) 
+
+#         photo_model = Photo()
+#         photo = photo_model.select(user_id=user[0][0])
+#         for p in photo:
+#             print("photo: ", p)
+#         photoUrl = os.path.basename(photo[0][2]) if photo and len(photo[0]) > 2 else 'default.png'   
+
+
+#         # user[0].add_friend("jareste")
+#         return jsonify({"msg": "OK", "access_token": access_token, "username": username, "photoUrl": photoUrl}), 200
+
+#     print("Bad username or password")
+#     abort(401, description="Bad username or password")
+#     # return jsonify({"msg": "Bad username or password"}), 401
+
+
 @bp.route('/login', methods=['POST'])
 def login():
-    print(type(app))
     username = request.json.get('username', None)
     password = request.json.get('password', None)
     user_model = User()
-    user = user_model.select(username=username)
+    users = user_model.select(username=username)
+    print('users', users)
+    if users:
+        user = users[0]  # Assume username is unique and get the first match
+        if check_password_hash(user.password, password):
+            access_token = Security.create_jwt(user.username, user.id)
+            
+            user_model.update(updates={'jwt': access_token}, conditions={'username': username})
 
-    print("user: ", user)
-    if user and check_password_hash(user[0][3], password):  # user[0][2] is the password field
-        access_token = Security.create_jwt(user[0][1], user[0][0])
-        
-        user_model.update(updates={'jwt': access_token}, conditions={'username': username})
+            all_users = user_model.select()
+            for u in all_users:
+                print(u) 
 
-        users = user_model.select()
-        for u in users:
-            print(u) 
+            photo_model = Photo()
+            photos = photo_model.select(user_id=user.id)
+            for p in photos:
+                print("photo: ", p)
+            photoUrl = os.path.basename(photos[0].url) if photos and len(photos[0].url) > 2 else 'default.png'
 
-        photo_model = Photo()
-        photo = photo_model.select(user_id=user[0][0])
-        for p in photo:
-            print("photo: ", p)
-        photoUrl = os.path.basename(photo[0][2]) if photo and len(photo[0]) > 2 else 'Default.png'   
-
-
-        # user[0].add_friend("jareste")
-        return jsonify({"msg": "OK", "access_token": access_token, "username": username, "photoUrl": photoUrl}), 200
+            return jsonify({"msg": "OK", "access_token": access_token, "username": username, "photoUrl": photoUrl}), 200
 
     print("Bad username or password")
     abort(401, description="Bad username or password")
-    # return jsonify({"msg": "Bad username or password"}), 401
+

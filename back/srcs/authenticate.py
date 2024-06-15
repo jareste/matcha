@@ -21,7 +21,7 @@ class Authenticate:
 
         user_model = User()
         user = user_model.select(username=username)
-        if not user or user[0][0] != user_id:
+        if not user or user[0].id != user_id:
             print("Invalid token")
             abort(401, description="Invalid token")
         

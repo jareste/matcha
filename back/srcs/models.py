@@ -22,12 +22,16 @@ class Field:
 
 class BaseModel:
     id = Field('INTEGER', primary_key=True, autoincrement=True)
+    
     def __init__(self, **kwargs):
         self.connection = sqlite3.connect('database.db')
         self.cursor = self.connection.cursor()
         self.table_name = self.__class__.__name__.lower()
         self.fields = {name: field for name, field in self.__class__.__dict__.items() if isinstance(field, Field)}
         self.create_table()
+        
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def create_table(self):
         fields_str = ', '.join(f'{name} {field.type} PRIMARY KEY AUTOINCREMENT' if field.primary_key and field.autoincrement else f'{name} {field.type}' for name, field in self.fields.items())
@@ -49,7 +53,9 @@ class BaseModel:
             self.cursor.execute(f'SELECT * FROM {self.table_name} WHERE {conditions_str}', values)
         else:
             self.cursor.execute(f'SELECT * FROM {self.table_name}')
-        return self.cursor.fetchall()
+        
+        rows = self.cursor.fetchall()
+        return [self._instantiate_from_row(row) for row in rows]
 
     def update(self, updates, conditions):
         updates_str = ', '.join(f'{field} = ?' for field in updates.keys())
@@ -57,6 +63,12 @@ class BaseModel:
         values = tuple(list(updates.values()) + list(conditions.values()))
         self.cursor.execute(f'UPDATE {self.table_name} SET {updates_str} WHERE {conditions_str}', values)
         self.connection.commit()
+
+    def _instantiate_from_row(self, row):
+        obj = self.__class__()
+        for idx, (name, field) in enumerate(self.fields.items()):
+            setattr(obj, name, row[idx])
+        return obj
 
     def get_fields(self):
         self.cursor.execute(f'PRAGMA table_info({self.table_name})')
@@ -86,28 +98,18 @@ class Photo(BaseModel):
     id = Field('INTEGER', primary_key=True, autoincrement=True)
     user_id = Field('INTEGER')
     url = Field('TEXT')
-    # To use::
-    # To add a photo for a user
-    # photo = Photo()
-    # photo.insert(user_id=user_id, url='/path/to/photo.jpg')
-    # # To get all photos for a user
-    # photos = photo.select(user_id=user_id)
 
 class User(BaseModel):
     id = Field('INTEGER', primary_key=True, autoincrement=True)
     username = Field('TEXT')
     email = Field('TEXT')
     password = Field('TEXT')
-    Photo = Field('TEXT', default='')
+    photo = Field('TEXT', default='')
     jwt = Field('TEXT', default='')
     friends = Field('TEXT', default='')
 
     def add_friend(self, friend_id):
-        friends = self.select(id=self.id)[0][-1]
-        if not friends:
-            friends = []
-        else:
-            friends = friends.split(',')
+        friends = self.friends.split(',') if self.friends else []
         if friend_id not in friends:
             friends.append(friend_id)
             self.update({'friends': ','.join(friends)}, {'id': self.id})

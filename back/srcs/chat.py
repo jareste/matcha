@@ -8,16 +8,16 @@ bp = Blueprint('chat', __name__)
 def get_friends():
     print('get frieeeends')
     user = Auth.authenticate(request)
-    user_id = user[0][0]
+    user_id = user[0].id
     user_model = User()
     user = user_model.select(id=user_id)
     user = user[0]
 
-    if not user[6]: # check if friends is empty
+    if not user.friends: # check if friends is empty
         return jsonify({"friends": []})
-    friends = user[6].split(',')
+    friends = user.friends.split(',')
     friend_list = []
     for friend in friends:
-        friend_list.append(user_model.select(id=friend)[0][1])
+        friend_list.append(user_model.select(id=friend)[0].username)
     return jsonify({"friends": friend_list})
 
