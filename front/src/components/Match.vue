@@ -1,6 +1,6 @@
 <template>
     <div class="main" style="background-color: #ff00cc;">
-        <p>As you will see graphic design is our main objective and we definately love it.</p>
+        <p>As you will see graphic design is our main objective and we definately love it...</p>
     </div>
 </template>
 
