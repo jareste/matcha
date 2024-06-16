@@ -76,7 +76,8 @@ class BaseModel:
     
     def select_all(self):
         self.cursor.execute(f'SELECT * FROM {self.table_name}')
-        return self.cursor.fetchall()
+        rows = self.cursor.fetchall()
+        return [self._instantiate_from_row(row) for row in rows]
 
     def add_column(self, column_name, column_type):
         self.cursor.execute(f'ALTER TABLE {self.table_name} ADD COLUMN {column_name} {column_type}')
@@ -105,17 +106,22 @@ class User(BaseModel):
     password = Field('TEXT')
     photo = Field('TEXT', default='')
     jwt = Field('TEXT', default='')
+    likes = Field('TEXT', default='')
     matches = Field('TEXT', default='')
 
-    def add_match(self, match_id):
+    # Used when both users are in each other likes
+    def add_match(self, target_id):
         matches = self.matches.split(',') if self.matches else []
-        if match_id not in matches:
-            matches.append(match_id)
+        if target_id not in matches:
+            matches.append(target_id)
             self.update({'matches': ','.join(matches)}, {'id': self.id})
 
-    def like(self, user_id):
-        self.add_match(user_id)
-        other_user = User().select(id=user_id)[0]
+    def add_like(self, target_id):
+        return False
+
+    def check_match(self, target_id):
+        self.add_match(target_id)
+        other_user = User().select(id=target_id)[0]
         if str(self.id) in other_user.matches.split(','):
             return True  # It's a match!
         return False

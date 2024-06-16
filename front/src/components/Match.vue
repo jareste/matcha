@@ -1,13 +1,11 @@
 <template>
   <div>
     <h1>Find Your Match</h1>
-    <div v-if="users.length">
-      <div v-for="user in users" :key="user.id" class="user-card">
-        <img :src="user.photo" alt="User photo" class="user-photo" />
-        <p>{{ user.username }}</p>
+    <div> <!-- v-if="possible_match"> -->
+        <img :src="possible_match.photo" alt="User photo" class="user-photo" />
+        <p>{{ possible_match.username }}</p>
         <button @click="likeUser(user.id)">Like</button>
         <button @click="passUser(user.id)">Pass</button>
-      </div>
     </div>
     <h2>Your Matches</h2>
     <div v-if="matches.length">
@@ -25,7 +23,12 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      users: [],
+      // users: [],
+      possible_match: {
+        photo: '',
+        username: '',
+        id: '',
+      },
       matches: [],
       user: {
         id: 1,
@@ -34,9 +37,14 @@ export default {
   },
   methods: {
     fetchUsers() {
-      axios.get('http://localhost:5000/users')
+      console.log(this.possible_match.length);
+      axios.get('http://localhost:5000/possible_match')
         .then(response => {
-          this.users = response.data;
+          console.log('sisisisisii');
+          this.possible_match.id = response.data.user;
+          this.possible_match.username = 'hola que tal';
+          this.possible_match.photo = 'http://localhost:5000/uploads/' + 'default.png';
+          console.log('ussers', this.users);
         })
         .catch(error => {
           console.error(error);
@@ -45,31 +53,33 @@ export default {
     fetchMatches() {
       axios.get(`http://localhost:5000/matches/${this.user.id}`)
         .then(response => {
+          console.log('sisisisisii41414123');
           this.matches = response.data.matches;
+          console.log('matches', this.matches);
         })
         .catch(error => {
           console.error(error);
         });
     },
-    likeUser(likedUserId) {
-      axios.post('http://localhost:5000/like', {
-        user_id: this.user.id,
-        liked_user_id: likedUserId,
-      })
-      .then(response => {
-        if (response.data.msg === "It's a match!") {
-          alert("It's a match!");
-          this.fetchMatches();
-        }
-        this.fetchUsers();
-      })
-      .catch(error => {
-        console.error(error);
-      });
-    },
-    passUser(userId) {
-      this.users = this.users.filter(user => user.id !== userId);
-    },
+    // likeUser(likedUserId) {
+    //   axios.post('http://localhost:5000/like', {
+    //     user_id: this.user.id,
+    //     liked_user_id: likedUserId,
+    //   })
+    //   .then(response => {
+    //     if (response.data.msg === "It's a match!") {
+    //       alert("It's a match!");
+    //       this.fetchMatches();
+    //     }
+    //     this.fetchUsers();
+    //   })
+    //   .catch(error => {
+    //     console.error(error);
+    //   });
+    // },
+    // passUser(userId) {
+    //   this.users = this.users.filter(user => user.id !== userId);
+    // },
   },
   created() {
     this.fetchUsers();

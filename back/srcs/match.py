@@ -20,6 +20,7 @@ def like():
 
 @bp.route('/matches/<int:user_id>', methods=['GET'])
 def get_matches(user_id):
+    print('get matcheeeeeeeeeeeeeeeeeeeeeeeeeeeeees')
     user_model = User()
     users = user_model.select(id=user_id)
     if users:
@@ -29,3 +30,15 @@ def get_matches(user_id):
             matched_users = [user_model.select(id=match_id)[0].__dict__ for match_id in matches]
             return jsonify({"matches": matched_users}), 200
     return jsonify({"matches": []}), 200
+
+
+@bp.route('/possible_match', methods=['GET'])
+def get_possible_match():
+    print('possible match!!!!!!!!!!!!!!!!!!!')
+    user_model = User()
+    #here must come the algorithm to find best match for self user
+    users = user_model.select(id='0')
+    if users:
+        user = users[0]
+        return jsonify({"user": user.id}), 200
+    return jsonify({"user": []}), 200
