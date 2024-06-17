@@ -2,7 +2,7 @@ import LoginRegister from './components/LoginRegister.vue'
 import UploadPhoto from './components/UploadPhoto.vue'
 import ProfilePage from './components/ProfilePage.vue'
 import Main from './components/Main.vue'
-import Match from './components/Match.vue'
+import Match from './components/MatchPage.vue'
 
 function isAuthenticated() {
     const token = localStorage.getItem('token');

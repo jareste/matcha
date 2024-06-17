@@ -1,6 +1,7 @@
 import sqlite3
 import csv
 from werkzeug.security import generate_password_hash
+import random
 
 import hashlib
 
@@ -125,6 +126,14 @@ class User(BaseModel):
         if str(self.id) in other_user.matches.split(','):
             return True  # It's a match!
         return False
+    
+    def select_random(self):
+        self.cursor.execute(f'SELECT * FROM {self.table_name}')
+        rows = self.cursor.fetchall()
+        if rows:
+            return self._instantiate_from_row(random.choice(rows))
+        else:
+            return None
 
 
 

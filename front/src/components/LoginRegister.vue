@@ -3,7 +3,7 @@
       <p>{{ message }}</p>
       <b-row class="justify-content-center">
         <b-col cols="12" md="8">
-          <b-card header="Vue.js Authentication" class="my-3">
+          <b-card header="Please don't register" class="my-3">
             <router-view></router-view>
             <b-form @submit.prevent="login">
               <b-card-title>Login</b-card-title>
@@ -25,7 +25,7 @@
       </b-row>
     </b-container>
     <b-footer class="mt-3 text-center">
-      <p>Vue.js Authentication</p>
+      <p>Really, we don't want you here.</p>
     </b-footer>
   </template>
   

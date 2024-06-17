@@ -56,7 +56,6 @@ export default {
   },
   setup () {
     const user = inject('user');
-    // let isProfileLoaded = inject('isProfileLoaded');
     return { user };
   }
   

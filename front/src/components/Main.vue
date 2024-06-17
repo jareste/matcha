@@ -1,6 +1,15 @@
 <template>
     <div class="main" style="background-color: #688952;">
         <p>As you will see graphic design is our main objective and we definately love it.</p>
+        <p>What we can say for sure is that this page was desiged adding as less effort as possible.</p>
+        <p>.</p>
+        <p>.</p>
+        <p>.</p>
+        <p>.</p>
+        <p>.</p>
+        <p>.</p>
+        <p>.</p>
+        <p>Please remove web projects...</p>
     </div>
 </template>
 

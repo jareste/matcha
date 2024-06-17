@@ -53,7 +53,7 @@
 }
 
 .file-input {
-    display: none; /* Hide the file input */
+    display: none;
 }
 </style>
 
@@ -67,7 +67,7 @@ export default {
                 username: '',//TODO no ensena ok el user y la foto
                 photoUrl: ''
             },
-            uploads: Array.from({ length: 5 }, () => ({ file: null, preview: null })) // Initialize an array of 5 unique upload slots
+            uploads: Array.from({ length: 5 }, () => ({ file: null, preview: null }))
         };
     },
     methods: {
@@ -83,13 +83,21 @@ export default {
                     formData.append(`image${index}`, upload.file);
                 }
             });
-            axios.post('http://localhost:5000/upload_photo', formData)
-                .then(response => {
-                    console.log(response.data); //not handled
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+
+
+            this.uploads = Array.from({ length: 5 }, () => ({ file: null, preview: null }));
+
+            /**/
+            try {
+                /* needs to be handled this way as i need to fetch profile again. */
+                const response = await axios.post('http://localhost:5000/upload_photo', formData);
+                console.log(response.data);
+
+                await this.fetchUserPhotos();
+            } catch (error) {
+                console.error(error);
+            }
+
         },
         async fetchUserPhotos() {
             try {
@@ -114,5 +122,3 @@ export default {
     }
 };
 </script>
-
-<!-- Add your existing styles here -->

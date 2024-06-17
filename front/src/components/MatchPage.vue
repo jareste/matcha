@@ -37,13 +37,12 @@ export default {
   },
   methods: {
     fetchUsers() {
-      console.log(this.possible_match.length);
       axios.get('http://localhost:5000/possible_match')
         .then(response => {
-          console.log('sisisisisii');
+          console.log('sisisisisii', response.data);
           this.possible_match.id = response.data.user;
-          this.possible_match.username = 'hola que tal';
-          this.possible_match.photo = 'http://localhost:5000/uploads/' + 'default.png';
+          this.possible_match.username = response.data.username;
+          this.possible_match.photo = 'http://localhost:5000/uploads/' + response.data.user_photo;
           console.log('ussers', this.users);
         })
         .catch(error => {
@@ -61,29 +60,43 @@ export default {
           console.error(error);
         });
     },
-    // likeUser(likedUserId) {
-    //   axios.post('http://localhost:5000/like', {
-    //     user_id: this.user.id,
-    //     liked_user_id: likedUserId,
-    //   })
-    //   .then(response => {
-    //     if (response.data.msg === "It's a match!") {
-    //       alert("It's a match!");
-    //       this.fetchMatches();
-    //     }
-    //     this.fetchUsers();
-    //   })
-    //   .catch(error => {
-    //     console.error(error);
-    //   });
-    // },
-    // passUser(userId) {
-    //   this.users = this.users.filter(user => user.id !== userId);
-    // },
+    likeUser(likedUserId) {
+      axios.post('http://localhost:5000/like', {
+        user_id: this.user.id,
+        liked_user_id: likedUserId,
+      })
+      .then(response => {
+        if (response.data.msg === "It's a match!") {
+          alert("It's a match!");
+          this.fetchMatches();
+        }
+        this.fetchUsers();
+      })
+      .catch(error => {
+        console.error(error);
+      });
+    },
+    passUser(userId) {
+      axios.post('http://localhost:5000/dislike', {
+        user_id: this.user.id,
+        liked_user_id: userId,
+      })
+      .then(response => {
+        if (response.data.msg === "It's a match!") {
+          alert("It's a match!");
+          this.fetchMatches();
+        }
+        this.fetchUsers();
+      })
+      .catch(error => {
+        console.error(error);
+      });
+
+    },
   },
   created() {
-    this.fetchUsers();
     this.fetchMatches();
+    this.fetchUsers();
   },
 };
 </script>
