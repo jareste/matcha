@@ -66,6 +66,7 @@ export default {
         liked_user_id: likedUserId,
       })
       .then(response => {
+        console.log('response', response.data.msg)
         if (response.data.msg === "It's a match!") {
           alert("It's a match!");
           this.fetchMatches();

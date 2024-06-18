@@ -15,7 +15,9 @@ def like():
     users = user_model.select(id=user_id)
     if users:
         user = users[0]
-        if user.like(liked_user_id):
+        print('liked_user_id', liked_user_id)
+        if user.add_like(liked_user_id):
+            print('aqui siiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii12312412421')
             return jsonify({"msg": "It's a match!"}), 200
     return jsonify({"msg": "Liked"}), 200
 

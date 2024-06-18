@@ -118,7 +118,7 @@ class User(BaseModel):
             self.update({'matches': ','.join(matches)}, {'id': self.id})
 
     def add_like(self, target_id):
-        return False
+        return True
 
     def check_match(self, target_id):
         self.add_match(target_id)
