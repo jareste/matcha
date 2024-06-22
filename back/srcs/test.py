@@ -20,10 +20,39 @@ def bye():
 @bp.route('/upload_photo', methods=['POST'])
 def upload_photo():
     print("upload_photo------------------------------------------------------------")
-    print(request)
+    print(request.files)
     user = Auth.authenticate(request)
 
     # print("user:", user)
+
+    description = request.form.get('text', '')
+    if not description or len(description) == 0 or len(description) > 420 or description.isspace():
+        abort(400, description="Description is required")
+
+    if file_key in request.files:
+        file = request.files[file_key]
+        if file.filename == '':
+            return jsonify({"msg": "No file selected"})
+        if file:
+            print('uploaded:', file.filename)
+            # try:
+            #     with Image.open(file.stream) as img:
+            #         pass  # Just opening to validate
+            # except Exception as e:
+            #     print("The file is not an image")
+            #     abort(400, description="The file is not an image")
+            # file.stream.seek(0)
+            # filename = secure_filename(file.filename)
+            # user_id = user[0].id
+            # unique_filename = f"{user_id}_{filename}_{time.time()}"
+            # hashed_filename = hash_to_db(unique_filename) + ".png"
+            # upload_path = os.path.join(app.config['UPLOAD_FOLDER'], hashed_filename)
+            # os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+            # file.save(upload_path)
+            
+
+
+
 
     for i in range(5):  # Assuming a maximum of 5 files
         file_key = f'image{i}'

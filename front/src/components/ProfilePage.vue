@@ -13,7 +13,7 @@
             </div>
         </div>
         <div>Personal description</div>
-        <input v-model="text"> 
+        <input v-model="text" maxlength="420"> 
         <button @click="saveImages">Save</button>
     </div>
 </template>
@@ -79,13 +79,22 @@ export default {
         },
         async saveImages() {
             const formData = new FormData();
+            console.log('this.text---------------------------------------------------------------------------------');
+            console.log('this.text', this.text);
+            // formData.append(`text`, this.text);
+            formData.append('text', this.text);
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
             this.uploads.forEach((upload, index) => {
                 if (upload.file) {
                     formData.append(`image${index}`, upload.file);
                 }
             });
 
-
+            for (let [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
             this.uploads = Array.from({ length: 5 }, () => ({ file: null, preview: null }));
 
             /**/
