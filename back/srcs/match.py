@@ -70,5 +70,6 @@ def get_possible_match():
             if counter == 10:
                 return jsonify({"user": []}), 200
         print('useeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer',user_random)
+        # return jsonify({"user": -1}), 200 #simulates not finding a match for testing purpouses
         return jsonify({"user": user_random.id, "username": user_random.username, "user_photo": 'default.png'}), 200
-    return jsonify({"user": []}), 200
+    return jsonify({"user": -1}), 200

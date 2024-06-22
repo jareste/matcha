@@ -109,6 +109,7 @@ class User(BaseModel):
     jwt = Field('TEXT', default='')
     likes = Field('TEXT', default='')
     matches = Field('TEXT', default='')
+    description = Field('TEXT', default='')
 
     # Used when both users are in each other likes
     def add_match(self, target_id):

@@ -12,7 +12,8 @@
                 <input :id="'file-upload-' + index" type="file" @change="previewImage($event, index)" class="file-input">
             </div>
         </div>
-
+        <div>Personal description</div>
+        <input v-model="text"> 
         <button @click="saveImages">Save</button>
     </div>
 </template>

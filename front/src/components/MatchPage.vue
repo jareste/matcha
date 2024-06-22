@@ -1,11 +1,14 @@
 <template>
   <div>
     <h1>Find Your Match</h1>
-    <div> <!-- v-if="possible_match"> -->
+    <div v-if="possible_match.id != -1" :key="possible_match.id"> <!-- v-if="possible_match"> -->
         <img :src="possible_match.photo" alt="User photo" class="user-photo" />
         <p>{{ possible_match.username }}</p>
         <button @click="likeUser(user.id)">Like</button>
         <button @click="passUser(user.id)">Pass</button>
+    </div>
+    <div v-if="possible_match.id == -1" :key="possible_match.id"> <!-- v-if="possible_match"> -->
+        <h1 style="color: #ffffff; background-color: #688952;">No possible match found! Please leave our page!!!!</h1>
     </div>
     <h2>Your Matches</h2>
     <div v-if="matches.length">
@@ -27,11 +30,11 @@ export default {
       possible_match: {
         photo: '',
         username: '',
-        id: '',
+        id: -1,
       },
       matches: [],
       user: {
-        id: 1,
+        id: 1, /* TODO update dynamically */
       },
     };
   },
@@ -40,10 +43,16 @@ export default {
       axios.get('http://localhost:5000/possible_match')
         .then(response => {
           console.log('sisisisisii', response.data);
-          this.possible_match.id = response.data.user;
-          this.possible_match.username = response.data.username;
-          this.possible_match.photo = 'http://localhost:5000/uploads/' + response.data.user_photo;
+          if (response.data.user != -1)
+          {
+            this.possible_match.id = response.data.user;
+            this.possible_match.username = response.data.username;
+            this.possible_match.photo = 'http://localhost:5000/uploads/' + response.data.user_photo;
+          } else {
+            this.possible_match.id = -1;  // No possible match found
+          }
           console.log('ussers', this.users);
+          console.log('matchid', this.possible_match.id);
         })
         .catch(error => {
           console.error(error);
