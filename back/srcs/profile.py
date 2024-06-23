@@ -6,8 +6,26 @@ from flask import current_app as app
 from PIL import Image
 from .security import Security
 from .authenticate import Authenticate as Auth
+from cryptography.fernet import Fernet
 
 bp = Blueprint('profile', __name__)
+
+def load_key():
+    key_file_path = 'secret.key'
+    
+    # Check if the key file exists
+    if not os.path.exists(key_file_path):
+        # If it doesn't exist, generate a new key and save it to the file
+        with open(key_file_path, 'wb') as key_file:
+            key = Fernet.generate_key()
+            key_file.write(key)
+    
+    # Read and return the key from the file
+    return open(key_file_path, 'rb').read()
+
+
+key = load_key()
+cipher = Fernet(key)
 
 @bp.route('/getProfile', methods=['GET'])
 def getProfile():
@@ -28,7 +46,7 @@ def getProfile():
         photoUrl = 'default.png'
 
     print("profile_pic: ", photoUrl)
-    return jsonify({"username": user.username, "email": user.email, "photoUrl": photoUrl})
+    return jsonify({"username": user.username, "email": user.email, "photoUrl": photoUrl, "description": user.description})
 
 @bp.route('/user_photos', methods=['GET'])
 def user_photos():
@@ -46,4 +64,13 @@ def user_photos():
     else:
         photoUrl = 'default.png'
 
-    return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl})
+    encrypted_description = user[0].description
+    if not encrypted_description:
+        return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": ""})
+        
+    decrypted_description = cipher.decrypt(encrypted_description.encode()).decode()
+    print("decrypted_description: ", decrypted_description)
+
+    print("description: ", decrypted_description)
+
+    return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": decrypted_description})

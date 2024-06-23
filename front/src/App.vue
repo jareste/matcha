@@ -3,7 +3,6 @@
     <nav>
       <div class="links">
         <router-link to="/login-register">Login/Register</router-link> |
-        <router-link to="/upload-photo">Upload Photo</router-link> |
         <router-link to="/profile">Profile Page</router-link> |
         <router-link to="/match">Match</router-link>
       </div>

@@ -7,8 +7,29 @@ from PIL import Image
 from .security import Security
 from .authenticate import Authenticate as Auth
 import time
+from cryptography.fernet import Fernet
 
 bp = Blueprint('test', __name__)
+
+
+
+
+def load_key():
+    key_file_path = 'secret.key'
+    
+    # Check if the key file exists
+    if not os.path.exists(key_file_path):
+        # If it doesn't exist, generate a new key and save it to the file
+        with open(key_file_path, 'wb') as key_file:
+            key = Fernet.generate_key()
+            key_file.write(key)
+    
+    # Read and return the key from the file
+    return open(key_file_path, 'rb').read()
+
+
+key = load_key()
+cipher = Fernet(key)
 
 @bp.route('/api/bye', methods=['GET'])
 def bye():
@@ -25,34 +46,19 @@ def upload_photo():
 
     # print("user:", user)
 
+
     description = request.form.get('text', '')
-    if not description or len(description) == 0 or len(description) > 420 or description.isspace():
-        abort(400, description="Description is required")
+    if not description or len(description.strip()) == 0 or len(description) > 420:
+        abort(400, description="Description is required and must be between 1 and 420 characters.")
 
-    if file_key in request.files:
-        file = request.files[file_key]
-        if file.filename == '':
-            return jsonify({"msg": "No file selected"})
-        if file:
-            print('uploaded:', file.filename)
-            # try:
-            #     with Image.open(file.stream) as img:
-            #         pass  # Just opening to validate
-            # except Exception as e:
-            #     print("The file is not an image")
-            #     abort(400, description="The file is not an image")
-            # file.stream.seek(0)
-            # filename = secure_filename(file.filename)
-            # user_id = user[0].id
-            # unique_filename = f"{user_id}_{filename}_{time.time()}"
-            # hashed_filename = hash_to_db(unique_filename) + ".png"
-            # upload_path = os.path.join(app.config['UPLOAD_FOLDER'], hashed_filename)
-            # os.makedirs(os.path.dirname(upload_path), exist_ok=True)
-            # file.save(upload_path)
-            
+    print("description: ", description)
+    encrypted_description = cipher.encrypt(description.encode()).decode()
+    print("encrypted_description: ", encrypted_description)
 
 
 
+    user = user[0]
+    user.update({'description': encrypted_description}, {'id': user.id})
 
     for i in range(5):  # Assuming a maximum of 5 files
         file_key = f'image{i}'

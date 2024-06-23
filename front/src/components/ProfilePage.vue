@@ -13,7 +13,8 @@
             </div>
         </div>
         <div>Personal description</div>
-        <input v-model="text" maxlength="420"> 
+        <textarea v-model="text" maxlength="420" rows="5" cols="50"></textarea>
+        <div v-if="descriptionError" class="error">{{ descriptionError }}</div>
         <button @click="saveImages">Save</button>
     </div>
 </template>
@@ -68,7 +69,9 @@ export default {
                 username: '',//TODO no ensena ok el user y la foto
                 photoUrl: ''
             },
-            uploads: Array.from({ length: 5 }, () => ({ file: null, preview: null }))
+            uploads: Array.from({ length: 5 }, () => ({ file: null, preview: null })),
+            text: '',
+            descriptionError: '',
         };
     },
     methods: {
@@ -77,7 +80,24 @@ export default {
             this.uploads[index].file = file;
             this.uploads[index].preview = URL.createObjectURL(file);
         },
+        validateDescription() {
+            if (!this.text || this.text.trim().length === 0) {
+                this.descriptionError = 'Description is required.';
+                return false;
+            } else if (this.text.length > 420) {
+                this.descriptionError = 'Description must be less than 420 characters.';
+                return false;
+            } else {
+                this.descriptionError = '';
+                return true;
+            }
+        },
         async saveImages() {
+            if (!this.validateDescription()) {
+                return;
+            }
+
+            /**/
             const formData = new FormData();
             console.log('this.text---------------------------------------------------------------------------------');
             console.log('this.text', this.text);
@@ -120,7 +140,9 @@ export default {
                     });
                     this.user.username = response.data.username;
                     this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
+                    this.text = response.data.description;
                     this.isProfileLoaded = true;
+                    console.log('responsedescription', response.data.description);
                 });
             } catch (error) {
                 console.error(error);
