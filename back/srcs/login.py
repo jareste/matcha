@@ -21,10 +21,11 @@ def register():
     print(request.json)
     username = request.json.get('username', None)
     email = request.json.get('email', None)
+    age = request.json.get('age', None)
     password = request.json.get('password', None)
     password_confirmation = request.json.get('password_confirmation', None)
 
-    if not username or not email or not password or not password_confirmation:
+    if not username or not email or not password or not password_confirmation or not age or int(age) < 18 or int(age) > 120:
         print("Missing required fields")
         abort(400, description="Missing required fields")
         # return jsonify({"msg": "Missing required fields"}), 400
@@ -55,9 +56,10 @@ def register():
         print(msg)
         abort(400, description=msg) 
 
+    print("age,", age)
     try:
         hashed_password = generate_password_hash(password)
-        user_model.insert(username=username, email=email, password=hashed_password)
+        user_model.insert(username=username, email=email, password=hashed_password, age=age)
 
         return jsonify({"msg": "User created successfully"}), 201
     except Exception as e:

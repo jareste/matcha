@@ -30,9 +30,9 @@
       <option value="woman">Woman</option>
     </select>
 
-    <div>Age</div>
-    <input type="number" v-model="age" min="18" max="120">
-    <div v-if="ageError" class="error">{{ ageError }}</div>
+    <div>Age: {{age}}</div>
+    <!-- <input type="number" v-model="age" min="18" max="120">
+    <div v-if="ageError" class="error">{{ ageError }}</div> -->
 
     <div>Tags</div>
     <div>
@@ -41,11 +41,16 @@
       </label>
     </div>
 
-    <button @click="saveImages">Save Information</button>
+    <button @click="saveImages" class="save-button">Save Information</button>
   </div>
 </template>
 
 <style scoped>
+
+.save-button {
+    display: flex;
+    margin-bottom: 60px;
+}
 
 .profile-page {
     display: flex;
@@ -60,9 +65,10 @@
 }
 
 .custom-file-upload {
-    width: 200px;
-    height: 200px;
-    margin: 15px;
+    width: 150px;
+    height: 150px;
+    margin: 10px;
+    border-radius: 50%;
     border: 1px solid #00fb71;
     display: flex;
     justify-content: center;
@@ -75,8 +81,9 @@
 }
 
 .preview-photo {
-    width: 100%;
-    height: 100%;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
     object-fit: cover;
 }
 
@@ -154,7 +161,6 @@ export default {
 
             formData.append('gender', this.gender);
             formData.append('preferredGender', this.preferredGender);
-            formData.append('age', this.age);
             formData.append('text', this.text);
             /*DEBUG*/
             for (let [key, value] of formData.entries()) {
@@ -198,14 +204,13 @@ export default {
                     });
                     this.user.username = response.data.username;
                     this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
-                    this.text = response.data.description;
-                    // this.selectedTags = response.data.tags;
+                    this.text = response.data.description? response.data.description: "Add your description here";
                     this.selectedTags = response.data.tags ? response.data.tags.split(',') : [];
-                    this.gender = response.data.gender;
-                    this.preferredGender = response.data.prefered;
-                    this.age = response.data.age;
+                    this.gender = response.data.gender ? response.data.gender : "no specified";
+                    this.preferredGender = response.data.prefered? response.data.prefered : "no specified";
+                    this.age = response.data.age? response.data.age: "18";
                     this.isProfileLoaded = true;
-                    console.log('responsedescription', response.data.description);
+                    console.log('responsedescription', response.data.age);
                 });
             } catch (error) {
                 console.error(error);

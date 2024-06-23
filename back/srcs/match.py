@@ -64,11 +64,11 @@ def get_possible_match():
     if user_random:
         while user_random.id == user_id:
             if user[0].select_random() == None:
-                return jsonify({"user": []}), 200
+                return jsonify({"user": -1}), 200
             user_random = user[0].select_random()
             counter += 1
             if counter == 10:
-                return jsonify({"user": []}), 200
+                return jsonify({"user": -1}), 200
         print('useeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer',user_random)
         # return jsonify({"user": -1}), 200 #simulates not finding a match for testing purpouses
         return jsonify({"user": user_random.id, "username": user_random.username, "user_photo": 'default.png'}), 200

@@ -16,6 +16,7 @@
               <b-card-title>Register</b-card-title>
               <b-form-input type="text" v-model="registerForm.username" placeholder="Username"></b-form-input>
               <b-form-input type="email" v-model="registerForm.email" placeholder="Email"></b-form-input>
+              <b-form-input type="age" v-model="registerForm.age" placeholder="Age"></b-form-input>
               <b-form-input type="password" v-model="registerForm.password" placeholder="Password"></b-form-input>
               <b-form-input type="password" v-model="registerForm.passwordConfirmation" placeholder="Confirm Password"></b-form-input>
               <b-button type="submit" variant="primary">Register</b-button>
@@ -44,6 +45,7 @@
         registerForm: {
           username: '',
           email: '',
+          age: '',
           password: '',
           passwordConfirmation: ''
         }
@@ -82,10 +84,22 @@
             this.message = 'Error logging in: ' + error.response.data.description;
           });
       },
+      validateAge() {
+        if (!this.registerForm.age || this.registerForm.age < 18 || this.registerForm.age > 120) {
+            this.message = 'Age must be between 18 and 120.';
+            return false;
+        } else {
+            this.message = '';
+            return true;
+        }
+      },
       register() {
+        if (!this.validateAge())
+          return;
         const user = {
           username: this.registerForm.username,
           email: this.registerForm.email,
+          age: this.registerForm.age,
           password: this.registerForm.password,
           password_confirmation: this.registerForm.passwordConfirmation,
         };

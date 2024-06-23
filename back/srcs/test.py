@@ -62,11 +62,9 @@ def upload_photo():
 
     gender = request.form.get('gender', '')
     prefered_gender = request.form.get('preferredGender', '')
-    age = request.form.get('age', '')
     print('gender', gender)
     print('prefered', prefered_gender)
-    print('age', age)
-    user.update({'gender': gender, 'preference': prefered_gender, 'age': int(age)}, {'id': user.id})
+    user.update({'gender': gender, 'preference': prefered_gender}, {'id': user.id})
 
     for i in range(5):  # Assuming a maximum of 5 files
         file_key = f'image{i}'

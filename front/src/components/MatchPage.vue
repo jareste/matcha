@@ -46,8 +46,10 @@ export default {
           if (response.data.user != -1)
           {
             this.possible_match.id = response.data.user;
+            console.log('responseid:', response.data.user);
             this.possible_match.username = response.data.username;
             this.possible_match.photo = 'http://localhost:5000/uploads/' + response.data.user_photo;
+            // this.possible_match.id = -1;  // No possible match found
           } else {
             this.possible_match.id = -1;  // No possible match found
           }

@@ -64,10 +64,11 @@ def user_photos():
 
     encrypted_description = user[0].description
     if not encrypted_description:
-        return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": ""})
+        return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": "", "tags": user[0].tags, 'gender': user[0].gender, 'prefered': user[0].preference, 'age': user[0].age})
         
     decrypted_description = cipher.decrypt(encrypted_description.encode()).decode()
     print("decrypted_description: ", decrypted_description)
     print("description: ", decrypted_description)
 
+    print("age", user[0].age)
     return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": decrypted_description, "tags": user[0].tags, 'gender': user[0].gender, 'prefered': user[0].preference, 'age': user[0].age})
