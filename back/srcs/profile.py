@@ -11,16 +11,13 @@ from cryptography.fernet import Fernet
 bp = Blueprint('profile', __name__)
 
 def load_key():
-    key_file_path = 'secret.key'
+    key_file_path = '.secret.key'
     
-    # Check if the key file exists
     if not os.path.exists(key_file_path):
-        # If it doesn't exist, generate a new key and save it to the file
         with open(key_file_path, 'wb') as key_file:
             key = Fernet.generate_key()
             key_file.write(key)
     
-    # Read and return the key from the file
     return open(key_file_path, 'rb').read()
 
 
@@ -48,6 +45,7 @@ def getProfile():
     print("profile_pic: ", photoUrl)
     return jsonify({"username": user.username, "email": user.email, "photoUrl": photoUrl, "description": user.description})
 
+#Actual getter of profile page hehe
 @bp.route('/user_photos', methods=['GET'])
 def user_photos():
     user = Auth.authenticate(request)
@@ -70,7 +68,6 @@ def user_photos():
         
     decrypted_description = cipher.decrypt(encrypted_description.encode()).decode()
     print("decrypted_description: ", decrypted_description)
-
     print("description: ", decrypted_description)
 
-    return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": decrypted_description})
+    return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": decrypted_description, "tags": user[0].tags, 'gender': user[0].gender, 'prefered': user[0].preference, 'age': user[0].age})

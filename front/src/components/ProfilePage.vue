@@ -1,22 +1,48 @@
 <template>
-    <div class="profile-page">
-        <img :src="user.photoUrl" alt="User photo" class="profile-photo">
-        <h2 class="username">{{ user.username }}</h2>
+  <div class="profile-page">
+    <img :src="user.photoUrl" alt="User photo" class="profile-photo">
+    <h2 class="username">{{ user.username }}</h2>
 
-        <div class="photo-upload-container">
-            <div class="photo-upload" v-for="(upload, index) in uploads" :key="index">
-                <label :for="'file-upload-' + index" class="custom-file-upload">
-                    <img :src="upload.preview" class="preview-photo" v-if="upload.preview">
-                    <div class="plus-sign" v-else>+</div>
-                </label>
-                <input :id="'file-upload-' + index" type="file" @change="previewImage($event, index)" class="file-input">
-            </div>
-        </div>
-        <div>Personal description</div>
-        <textarea v-model="text" maxlength="420" rows="5" cols="50"></textarea>
-        <div v-if="descriptionError" class="error">{{ descriptionError }}</div>
-        <button @click="saveImages">Save</button>
+    <div class="photo-upload-container">
+      <div class="photo-upload" v-for="(upload, index) in uploads" :key="index">
+        <label :for="'file-upload-' + index" class="custom-file-upload">
+          <img :src="upload.preview" class="preview-photo" v-if="upload.preview">
+          <div class="plus-sign" v-else>+</div>
+        </label>
+        <input :id="'file-upload-' + index" type="file" @change="previewImage($event, index)" class="file-input">
+      </div>
     </div>
+    <div>Personal description</div>
+    <textarea v-model="text" maxlength="420" rows="5" cols="50"></textarea>
+    <div v-if="descriptionError" class="error">{{ descriptionError }}</div>
+
+    <div>Gender</div>
+    <select v-model="gender">
+      <option value="no specified">No Specified</option>
+      <option value="men">Men</option>
+      <option value="woman">Woman</option>
+    </select>
+
+    <div>Preferred Gender</div>
+    <select v-model="preferredGender">
+      <option value="no specified">No Specified</option>
+      <option value="men">Men</option>
+      <option value="woman">Woman</option>
+    </select>
+
+    <div>Age</div>
+    <input type="number" v-model="age" min="18" max="120">
+    <div v-if="ageError" class="error">{{ ageError }}</div>
+
+    <div>Tags</div>
+    <div>
+      <label v-for="tag in validTags" :key="tag">
+        <input type="checkbox" :value="tag" v-model="selectedTags"> {{ tag }}
+      </label>
+    </div>
+
+    <button @click="saveImages">Save Information</button>
+  </div>
 </template>
 
 <style scoped>
@@ -54,6 +80,13 @@
     object-fit: cover;
 }
 
+.profile-photo {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
 .file-input {
     display: none;
 }
@@ -66,12 +99,18 @@ export default {
     data() {
         return {
             user: {
-                username: '',//TODO no ensena ok el user y la foto
+                username: '',
                 photoUrl: ''
             },
             uploads: Array.from({ length: 5 }, () => ({ file: null, preview: null })),
             text: '',
             descriptionError: '',
+            validTags: ['#sport', '#movies', '#series', '#gym', '#pets', '#cats'],
+            selectedTags: [],
+            gender: 'no specified',
+            preferredGender: 'no specified',
+            age: '',
+            ageError: ''
         };
     },
     methods: {
@@ -92,8 +131,17 @@ export default {
                 return true;
             }
         },
+        validateAge() {
+            if (!this.age || this.age < 18 || this.age > 120) {
+                this.ageError = 'Age must be between 18 and 120.';
+                return false;
+            } else {
+                this.ageError = '';
+                return true;
+            }
+        },
         async saveImages() {
-            if (!this.validateDescription()) {
+            if (!this.validateDescription() || !this.validateAge()) {
                 return;
             }
 
@@ -101,17 +149,26 @@ export default {
             const formData = new FormData();
             console.log('this.text---------------------------------------------------------------------------------');
             console.log('this.text', this.text);
-            // formData.append(`text`, this.text);
+
+
+            formData.append('gender', this.gender);
+            formData.append('preferredGender', this.preferredGender);
+            formData.append('age', this.age);
             formData.append('text', this.text);
+            /*DEBUG*/
             for (let [key, value] of formData.entries()) {
                 console.log(`${key}: ${value}`);
             }
+
+            /**/
+            formData.append('tags', this.selectedTags.join(','));
             this.uploads.forEach((upload, index) => {
                 if (upload.file) {
                     formData.append(`image${index}`, upload.file);
                 }
             });
 
+            /*DEBUG*/
             for (let [key, value] of formData.entries()) {
                 console.log(`${key}: ${value}`);
             }
@@ -141,6 +198,11 @@ export default {
                     this.user.username = response.data.username;
                     this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
                     this.text = response.data.description;
+                    // this.selectedTags = response.data.tags;
+                    this.selectedTags = response.data.tags ? response.data.tags.split(',') : [];
+                    this.gender = response.data.gender;
+                    this.preferredGender = response.data.prefered;
+                    this.age = response.data.age;
                     this.isProfileLoaded = true;
                     console.log('responsedescription', response.data.description);
                 });

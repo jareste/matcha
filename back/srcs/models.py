@@ -110,6 +110,39 @@ class User(BaseModel):
     likes = Field('TEXT', default='')
     matches = Field('TEXT', default='')
     description = Field('TEXT', default='')
+    tags = Field('TEXT', default='')
+    completed = Field('TEXT', default='false')
+    gender = Field('TEXT', default='no specified')
+    preference = Field('TEXT', default='no specified')
+    age = Field('INTEGER', default=18)
+    fame = Field('INTEGER', default=1000)
+
+    # Predefined tags
+    VALID_TAGS = {'#sport', '#movies', '#series', '#gym', '#pets', '#cats', '#coding', '#food',
+        '#party', '#sport', '#videogames'}
+    
+    VALID_GENDERS = {'men', 'woman', 'no specified'}
+
+    # Validate tags against predefined list
+    @staticmethod
+    def validate_tags(tags):
+        return all(tag in User.VALID_TAGS for tag in tags)
+
+
+    def add_tags(self, tags):
+        if not self.validate_tags(tags):
+            raise ValueError("Invalid tags provided.")
+        self.tags = ','.join(tags)
+        self.update({'tags': self.tags}, {'id': self.id})
+
+    def get_tags(self):
+        return self.tags.split(',')
+
+    def common_tags(self, other_user):
+        my_tags = set(self.get_tags())
+        other_tags = set(other_user.get_tags())
+        return my_tags.intersection(other_tags)
+
 
     # Used when both users are in each other likes
     def add_match(self, target_id):
@@ -136,6 +169,7 @@ class User(BaseModel):
         else:
             return None
 
+#DEBUG
 def insert_users_from_csv(file_name):
     with open(file_name, 'r') as file:
         reader = csv.DictReader(file)
