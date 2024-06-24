@@ -18,7 +18,7 @@
               <b-form-input type="text" v-model="registerForm.first_name" placeholder="First name"></b-form-input>
               <b-form-input type="text" v-model="registerForm.last_name" placeholder="Last name"></b-form-input>
               <b-form-input type="email" v-model="registerForm.email" placeholder="Email"></b-form-input>
-              <b-form-input type="age" v-model="registerForm.age" placeholder="Age"></b-form-input>
+              <b-form-input type="number" v-model="registerForm.age" placeholder="Age"></b-form-input>
               <b-form-input type="password" v-model="registerForm.password" placeholder="Password"></b-form-input>
               <b-form-input type="password" v-model="registerForm.passwordConfirmation" placeholder="Confirm Password"></b-form-input>
               <b-button type="submit" variant="primary">Register</b-button>
@@ -56,6 +56,11 @@
     setup () {
       const user = inject('user');
       return { user };
+    },
+    watch: {
+        'registerForm.age'() {
+        this.validateAge();
+        },
     },
     methods: {
       login() {

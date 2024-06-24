@@ -1,6 +1,7 @@
 <template>
   <div class="profile-page">
     <img :src="user.photoUrl" alt="User photo" class="profile-photo">
+    <div>Fame: {{fame}}</div>
     <!-- <h2 class="username">{{ user.username }}</h2> -->
     <input type="text" v-model="user.username">
     <input type="text" v-model="user.first_name">
@@ -138,7 +139,8 @@ export default {
             gender: 'no specified',
             preferredGender: 'no specified',
             age: '',
-            ageError: ''
+            ageError: '',
+            fame: 0,
         };
     },
     setup () {
@@ -260,6 +262,7 @@ export default {
                     this.ageError = '';
                     this.user.email = response.data.email;
                     this.user.first_name = response.data.first_name;
+                    this.fame = response.data.fame;
                     this.user.last_name = response.data.last_name;
                     this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
                     this.text = response.data.description? response.data.description: "Add your description here";
