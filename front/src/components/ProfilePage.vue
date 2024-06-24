@@ -232,6 +232,7 @@ export default {
             try {
                 /* needs to be handled this way as i need to fetch profile again. */
                 const response = await axios.post('http://localhost:5000/upload_photo', formData);
+                console.log('response', response.data);
 
                 if (response.data.access_token) {
                     localStorage.setItem('token', response.data.access_token);

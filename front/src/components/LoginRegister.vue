@@ -27,9 +27,9 @@
         </b-col>
       </b-row>
     </b-container>
-    <b-footer class="mt-3 text-center">
+    <!-- <b-footer class="mt-3 text-center">
       <p>Really, we don't want you here.</p>
-    </b-footer>
+    </b-footer> -->
   </template>
   
   <script>

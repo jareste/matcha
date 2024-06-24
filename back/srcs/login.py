@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models import User, Photo
 from flask import Blueprint, request, jsonify, abort
 from flask import app
+import requests
 from .security import Security
 import os
 import re
@@ -87,13 +88,19 @@ def login():
             user_model.update(updates={'jwt': access_token}, conditions={'username': username})
 
             all_users = user_model.select()
-            for u in all_users:
-                print(u) 
+            # for u in all_users:
+            #     print(u) 
+            
+            ip_address = request.remote_addr
+            # ip_address = '95.127.43.66'#get ip so i can get location
+            response = requests.get(f'http://ipinfo.io/{ip_address}/json?token=84b405eef28ede')
+            print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+            print(response.json())
 
             photo_model = Photo()
             photos = photo_model.select(user_id=user.id)
-            for p in photos:
-                print("photo: ", p)
+            # for p in photos:
+            #     print("photo: ", p)
             photoUrl = os.path.basename(photos[0].url) if photos and len(photos[0].url) > 2 else 'default.png'
 
             return jsonify({"msg": "OK", "access_token": access_token, "username": username, "photoUrl": photoUrl}), 200

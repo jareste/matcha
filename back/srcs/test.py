@@ -54,10 +54,13 @@ def upload_photo():
 
     tags = request.form.get('tags', '')
     tags_list = tags.split(',')
-    try:
-        user.add_tags(tags_list)
-    except ValueError as e:
-        abort(400, description=str(e))
+    if tags_list and tags_list[0] != '':
+        try:
+            user.add_tags(tags_list)
+        except ValueError as e:
+            abort(400, description=str(e))
+    else:
+        user.add_tags([])
 
 
     gender = request.form.get('gender', '')
@@ -68,9 +71,6 @@ def upload_photo():
     email = request.form.get('email', '')
     age_min = request.form.get('ageMin', '')
     age_max = request.form.get('ageMax', '')
-    print('username', username)
-    print('gender', gender)
-    print('prefered', prefered_gender)
     user.update({'gender': gender, 'preference': prefered_gender, 'username': username, 'first_name': first_name, 'last_name': last_name, 'email': email, 'age_max': age_max, 'age_min': age_min}, {'id': user.id})
 
     for i in range(5):  # Assuming a maximum of 5 files
