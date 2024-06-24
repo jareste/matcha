@@ -1,7 +1,11 @@
 <template>
   <div class="profile-page">
     <img :src="user.photoUrl" alt="User photo" class="profile-photo">
-    <h2 class="username">{{ user.username }}</h2>
+    <!-- <h2 class="username">{{ user.username }}</h2> -->
+    <input type="text" v-model="user.username">
+    <input type="text" v-model="user.first_name">
+    <input type="text" v-model="user.last_name">
+    <!-- <h2 class="name">{{ user.first_name }} {{ user.last_name }}</h2> -->
 
     <div class="photo-upload-container">
       <div class="photo-upload" v-for="(upload, index) in uploads" :key="index">
@@ -107,6 +111,8 @@ export default {
         return {
             user: {
                 username: '',
+                first_name: '',
+                last_name: '',
                 photoUrl: ''
             },
             uploads: Array.from({ length: 5 }, () => ({ file: null, preview: null })),
@@ -142,7 +148,7 @@ export default {
         validateAge() {
             if (!this.age || this.age < 18 || this.age > 120) {
                 this.ageError = 'Age must be between 18 and 120.';
-                return false;
+                return false;   
             } else {
                 this.ageError = '';
                 return true;
@@ -160,6 +166,9 @@ export default {
 
 
             formData.append('gender', this.gender);
+            formData.append('username', this.user.username);
+            formData.append('first_name', this.user.first_name);
+            formData.append('last_name', this.user.last_name);
             formData.append('preferredGender', this.preferredGender);
             formData.append('text', this.text);
             /*DEBUG*/
@@ -186,7 +195,17 @@ export default {
                 /* needs to be handled this way as i need to fetch profile again. */
                 const response = await axios.post('http://localhost:5000/upload_photo', formData);
                 console.log(response.data);
+                console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+                console.log('response.data.access_token', response.data.access_token);
 
+                if (response.data.access_token) {
+                    localStorage.setItem('token', response.data.access_token);
+                    axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
+                    // localStorage.setItem('token', response.data.access_token);
+                    // axios.defaults.headers.common['Authorization'] = 'Bearer ' + response.data.access_token;
+                }
+
+                sleep(1000);
                 await this.fetchUserPhotos();
             } catch (error) {
                 console.error(error);
@@ -203,6 +222,8 @@ export default {
                         this.uploads[index].preview = 'http://localhost:5000/uploads/' + photo;
                     });
                     this.user.username = response.data.username;
+                    this.user.first_name = response.data.first_name;
+                    this.user.last_name = response.data.last_name;
                     this.user.photoUrl = 'http://localhost:5000/uploads/' + response.data.photoUrl;
                     this.text = response.data.description? response.data.description: "Add your description here";
                     this.selectedTags = response.data.tags ? response.data.tags.split(',') : [];

@@ -103,6 +103,8 @@ class Photo(BaseModel):
 class User(BaseModel):
     id = Field('INTEGER', primary_key=True, autoincrement=True)
     username = Field('TEXT')
+    first_name = Field('TEXT')
+    last_name = Field('TEXT')
     email = Field('TEXT')
     password = Field('TEXT')
     photo = Field('TEXT', default='')
@@ -114,7 +116,7 @@ class User(BaseModel):
     completed = Field('TEXT', default='false')
     gender = Field('TEXT', default='no specified')
     preference = Field('TEXT', default='no specified')
-    age = Field('INTEGER', default=18)
+    age = Field('INTEGER')
     fame = Field('INTEGER', default=1000)
 
     # Predefined tags

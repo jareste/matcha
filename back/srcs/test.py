@@ -62,9 +62,13 @@ def upload_photo():
 
     gender = request.form.get('gender', '')
     prefered_gender = request.form.get('preferredGender', '')
+    username = request.form.get('username', '')
+    first_name = request.form.get('first_name', '')
+    last_name = request.form.get('last_name', '')
+    print('username', username)
     print('gender', gender)
     print('prefered', prefered_gender)
-    user.update({'gender': gender, 'preference': prefered_gender}, {'id': user.id})
+    user.update({'gender': gender, 'preference': prefered_gender, 'username': username, 'first_name': first_name, 'last_name': last_name}, {'id': user.id})
 
     for i in range(5):  # Assuming a maximum of 5 files
         file_key = f'image{i}'
@@ -100,7 +104,12 @@ def upload_photo():
             print("photo saved at: ", upload_path)
             print("username: ", user_id)
 
-    return jsonify({"msg": "Files uploaded successfully"})
+    access_token = Security.create_jwt(user.username, user.id)
+            
+    user.update({'jwt': access_token}, {'id': user.id})
+    # user.update(updates={'jwt': access_token}, conditions={'username': username})
+
+    return jsonify({"msg": "Files uploaded successfully", "access_token": access_token})
 
 ##
 @bp.route('/delete_photo/<photo_url>', methods=['DELETE'])

@@ -15,6 +15,8 @@
             <b-form @submit.prevent="register" class="mt-3">
               <b-card-title>Register</b-card-title>
               <b-form-input type="text" v-model="registerForm.username" placeholder="Username"></b-form-input>
+              <b-form-input type="text" v-model="registerForm.first_name" placeholder="First name"></b-form-input>
+              <b-form-input type="text" v-model="registerForm.last_name" placeholder="Last name"></b-form-input>
               <b-form-input type="email" v-model="registerForm.email" placeholder="Email"></b-form-input>
               <b-form-input type="age" v-model="registerForm.age" placeholder="Age"></b-form-input>
               <b-form-input type="password" v-model="registerForm.password" placeholder="Password"></b-form-input>
@@ -98,6 +100,8 @@
           return;
         const user = {
           username: this.registerForm.username,
+          first_name: this.registerForm.first_name,
+          last_name: this.registerForm.last_name,
           email: this.registerForm.email,
           age: this.registerForm.age,
           password: this.registerForm.password,
