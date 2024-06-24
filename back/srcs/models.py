@@ -117,6 +117,8 @@ class User(BaseModel):
     gender = Field('TEXT', default='no specified')
     preference = Field('TEXT', default='no specified')
     age = Field('INTEGER')
+    age_min = Field('INTEGER', default=18)
+    age_max = Field('INTEGER', default=120)
     fame = Field('INTEGER', default=1000)
 
     # Predefined tags

@@ -1,4 +1,5 @@
 from flask_jwt_extended import create_access_token, decode_token
+from datetime import timedelta
 
 class Security:
     def check_password(password):
@@ -13,9 +14,10 @@ class Security:
         if not any(char in "!@#$%^&*()-_=+[]{}|;:,.<>?/~" for char in password):
             return False, "Password must contain at least one special character"
         return True, "Password is secure"
-
+    
     def create_jwt(name, id):
-        return create_access_token(identity=name, additional_claims={"user_id": id})
+        expires = timedelta(hours=24)
+        return create_access_token(identity=name, additional_claims={"user_id": id}, expires_delta=expires)
 
     def decode_jwt(token):
         decoded_token = decode_token(token)
