@@ -71,7 +71,8 @@ def upload_photo():
     email = request.form.get('email', '')
     age_min = request.form.get('ageMin', '')
     age_max = request.form.get('ageMax', '')
-    user.update({'gender': gender, 'preference': prefered_gender, 'username': username, 'first_name': first_name, 'last_name': last_name, 'email': email, 'age_max': age_max, 'age_min': age_min}, {'id': user.id})
+    enabled = request.form.get('enabled', '')
+    user.update({'gender': gender, 'preference': prefered_gender, 'username': username, 'first_name': first_name, 'last_name': last_name, 'email': email, 'age_max': age_max, 'age_min': age_min, 'enabled': enabled}, {'id': user.id})
 
     for i in range(5):  # Assuming a maximum of 5 files
         file_key = f'image{i}'

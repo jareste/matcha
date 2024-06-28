@@ -114,6 +114,7 @@ class User(BaseModel):
     description = Field('TEXT', default='')
     tags = Field('TEXT', default='')
     completed = Field('TEXT', default='false')
+    enabled = Field('TEXT', default='false')
     gender = Field('TEXT', default='no specified')
     preference = Field('TEXT', default='no specified')
     age = Field('INTEGER')

@@ -7,8 +7,9 @@
     <input type="text" v-model="user.first_name">
     <input type="text" v-model="user.last_name">
     <input type="text" v-model="user.email">
-    <!-- <h2 class="name">{{ user.first_name }} {{ user.last_name }}</h2> -->
-
+    <div>Profile enabled
+        <input type="checkbox" :value="enabled" v-model="enableProfile"> {{ enabled }}
+    </div>
     <div class="photo-upload-container">
       <div class="photo-upload" v-for="(upload, index) in uploads" :key="index">
         <label :for="'file-upload-' + index" class="custom-file-upload">
@@ -51,6 +52,7 @@
         <input type="checkbox" :value="tag" v-model="selectedTags"> {{ tag }}
       </label>
     </div>
+
 
     <button @click="saveImages" class="save-button">Save Information</button>
   </div>
@@ -140,6 +142,7 @@ export default {
             preferredGender: 'no specified',
             age: '',
             ageError: '',
+            enabled: false,
             fame: 0,
         };
     },
@@ -209,6 +212,7 @@ export default {
             formData.append('email', this.user.email);
             formData.append('preferredGender', this.preferredGender);
             formData.append('text', this.text);
+            formData.append('enabled', this.enableProfile);
             /*DEBUG*/
             // for (let [key, value] of formData.entries()) {
             //     console.log(`${key}: ${value}`);
@@ -272,6 +276,8 @@ export default {
                     this.preferredGender = response.data.prefered? response.data.prefered : "no specified";
                     this.age = response.data.age? response.data.age: "18";
                     this.isProfileLoaded = true;
+                    this.enableProfile = response.data.enabled;
+                    this.enabled = response.data.enabled;
                     console.log('responsedescription', response.data.age);
                 });
             } catch (error) {

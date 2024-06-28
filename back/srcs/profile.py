@@ -64,11 +64,11 @@ def user_photos():
 
     encrypted_description = user[0].description
     if not encrypted_description:
-        return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": "", "tags": user[0].tags, 'gender': user[0].gender, 'prefered': user[0].preference, 'age': user[0].age, 'first_name': user[0].first_name, 'last_name': user[0].last_name, 'email': user[0].email, 'age_min': user[0].age_min, 'age_max': user[0].age_max, 'fame': user[0].fame})
+        return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": "", "tags": user[0].tags, 'gender': user[0].gender, 'prefered': user[0].preference, 'age': user[0].age, 'first_name': user[0].first_name, 'last_name': user[0].last_name, 'email': user[0].email, 'age_min': user[0].age_min, 'age_max': user[0].age_max, 'fame': user[0].fame, 'enabled': True if user[0].enabled=='true' else False})
         
     decrypted_description = cipher.decrypt(encrypted_description.encode()).decode()
     print("decrypted_description: ", decrypted_description)
     print("description: ", decrypted_description)
 
     print("age", user[0].age)
-    return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": decrypted_description, "tags": user[0].tags, 'gender': user[0].gender, 'prefered': user[0].preference, 'age': user[0].age, 'first_name': user[0].first_name, 'last_name': user[0].last_name, 'email': user[0].email, 'age_min': user[0].age_min, 'age_max': user[0].age_max, 'fame': user[0].fame})
+    return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": decrypted_description, "tags": user[0].tags, 'gender': user[0].gender, 'prefered': user[0].preference, 'age': user[0].age, 'first_name': user[0].first_name, 'last_name': user[0].last_name, 'email': user[0].email, 'age_min': user[0].age_min, 'age_max': user[0].age_max, 'fame': user[0].fame, 'enabled': True if user[0].enabled=='true' else False})
