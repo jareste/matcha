@@ -1,10 +1,16 @@
 <template>
   <div>
     <nav>
-      <div class="links">
-        <router-link to="/login-register">Login/Register</router-link> |
-        <router-link to="/profile">Profile Page</router-link> |
-        <router-link to="/match">Match</router-link>
+      <div class="nav-content">
+        <div class="links">
+          <router-link to="/login-register">Login/Register</router-link> |
+          <router-link to="/profile">Profile Page</router-link> |
+          <router-link to="/match">Match</router-link>
+        </div>
+        <div class="search-bar">
+          <input v-model="searchQuery" @keyup.enter="searchProfile" placeholder="Search for user">
+          <button @click="searchProfile">Search</button>
+        </div>
       </div>
       <div class="user-info" v-if="user.username && user.photoUrl">
         <img :src="user.photoUrl" alt="User photo" class="user-photo">
@@ -28,15 +34,17 @@ export default {
   data() {
     return {
       isChatOpen: false,
-      // user: {
-      //   username: '',
-      //   photoUrl: ''
-      // }
+      searchQuery: ''
     }
   },
   methods: {
     toggleChat() {
       this.isChatOpen = !this.isChatOpen;
+    },
+    searchProfile() {
+      if (this.searchQuery) {
+        this.$router.push(`/profile/${this.searchQuery}`);
+      }
     }
   },
   created() {
@@ -57,24 +65,43 @@ export default {
     const user = inject('user');
     return { user };
   }
-  
 }
 </script>
 
 <style scoped>
 nav {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
+  align-items: center;
+}
+
+.nav-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .links {
-  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  margin-right: 20px;
+  margin-top: 10px;
 }
 
 .user-photo {
@@ -82,6 +109,32 @@ nav {
   height: 50px;
   border-radius: 50%;
   margin-right: 10px;
+}
+
+@media (min-width: 600px) {
+  nav {
+    flex-direction: row;
+  }
+  
+  .nav-content {
+    flex-direction: row;
+    justify-content: space-between;
+    width: auto;
+  }
+
+  .links {
+    margin-bottom: 0;
+    margin-right: 20px;
+  }
+
+  .search-bar {
+    margin-bottom: 0;
+  }
+
+  .user-info {
+    margin-top: 0;
+    margin-right: 20px;
+  }
 }
 
 @media (max-width: 600px) {

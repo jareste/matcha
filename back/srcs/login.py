@@ -67,7 +67,7 @@ def register():
     print("age,", age)
     try:
         hashed_password = generate_password_hash(password)
-        user_model.insert(username=username, email=email, password=hashed_password, age=age, first_name=first_name, last_name=last_name, fame=1000)
+        user_model.insert(username=username, email=email, password=hashed_password, age=age, first_name=first_name, last_name=last_name, fame=1000, enabled='false', completed='false')
 
         return jsonify({"msg": "User created successfully"}), 201
     except Exception as e:

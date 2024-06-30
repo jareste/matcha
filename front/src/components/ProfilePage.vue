@@ -20,7 +20,7 @@
       </div>
     </div>
     <div>Personal description</div>
-    <textarea v-model="text" maxlength="420" rows="5" cols="50"></textarea>
+    <textarea v-model="text" maxlength="420" rows="5" cols="40"></textarea>
     <div v-if="descriptionError" class="error">{{ descriptionError }}</div>
 
     <div>Gender</div>
@@ -57,64 +57,6 @@
     <button @click="saveImages" class="save-button">Save Information</button>
   </div>
 </template>
-
-<style scoped>
-
-.save-button {
-    display: flex;
-    margin-bottom: 60px;
-}
-
-.profile-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.photo-upload-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-}
-
-.custom-file-upload {
-    width: 150px;
-    height: 150px;
-    margin: 10px;
-    border-radius: 50%;
-    border: 1px solid #00fb71;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #060000;
-}
-
-.plus-sign {
-    font-size: 50px;
-}
-
-.preview-photo {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.profile-photo {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.file-input {
-    display: none;
-}
-
-.error {
-    color: rgb(201, 0, 191);
-}
-</style>
 
 <script>
 import axios from 'axios';
@@ -199,9 +141,6 @@ export default {
 
             /**/
             const formData = new FormData();
-            console.log('this.text---------------------------------------------------------------------------------');
-            console.log('this.text', this.text);
-
 
             formData.append('gender', this.gender);
             formData.append('username', this.user.username);
@@ -213,10 +152,6 @@ export default {
             formData.append('preferredGender', this.preferredGender);
             formData.append('text', this.text);
             formData.append('enabled', this.enableProfile);
-            /*DEBUG*/
-            // for (let [key, value] of formData.entries()) {
-            //     console.log(`${key}: ${value}`);
-            // }
 
             /**/
             formData.append('tags', this.selectedTags.join(','));
@@ -226,10 +161,6 @@ export default {
                 }
             });
 
-            /*DEBUG*/
-            // for (let [key, value] of formData.entries()) {
-            //     console.log(`${key}: ${value}`);
-            // }
             this.uploads = Array.from({ length: 5 }, () => ({ file: null, preview: null }));
 
             /**/
@@ -290,3 +221,61 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+
+.save-button {
+    display: flex;
+    margin-bottom: 60px;
+}
+
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.photo-upload-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.custom-file-upload {
+    width: 150px;
+    height: 150px;
+    margin: 10px;
+    border-radius: 50%;
+    border: 1px solid #00fb71;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #060000;
+}
+
+.plus-sign {
+    font-size: 50px;
+}
+
+.preview-photo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-photo {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.file-input {
+    display: none;
+}
+
+.error {
+    color: rgb(201, 0, 191);
+}
+</style>

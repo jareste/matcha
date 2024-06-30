@@ -72,6 +72,10 @@ def upload_photo():
     age_min = request.form.get('ageMin', '')
     age_max = request.form.get('ageMax', '')
     enabled = request.form.get('enabled', '')
+    if enabled == 'true':
+        if user.completed == 'false':
+            enabled = 'false' # maybe also some message to the user?
+
     user.update({'gender': gender, 'preference': prefered_gender, 'username': username, 'first_name': first_name, 'last_name': last_name, 'email': email, 'age_max': age_max, 'age_min': age_min, 'enabled': enabled}, {'id': user.id})
 
     for i in range(5):  # Assuming a maximum of 5 files

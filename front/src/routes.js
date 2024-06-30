@@ -3,6 +3,7 @@ import UploadPhoto from './components/UploadPhoto.vue'
 import ProfilePage from './components/ProfilePage.vue'
 import Main from './components/Main.vue'
 import Match from './components/MatchPage.vue'
+import ProfilePagetwo from './components/ProfilePagetwo.vue'
 
 function isAuthenticated() {
     const token = localStorage.getItem('token');
@@ -65,6 +66,17 @@ const routes = [
             }
         }
     },
+    {
+        path: '/profile/:username',
+        component: ProfilePagetwo,
+        beforeEnter: (to, from, next) => {
+            if (isAuthenticated()) {
+                next();
+            } else {
+                next('/login-register');
+            }
+        }
+    }
 ]
 
 export default routes;

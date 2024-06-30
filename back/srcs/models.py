@@ -124,7 +124,7 @@ class User(BaseModel):
 
     # Predefined tags
     VALID_TAGS = {'#sport', '#movies', '#series', '#gym', '#pets', '#cats', '#coding', '#food',
-        '#party', '#sport', '#videogames'}
+        '#party', '#videogames'}
     
     VALID_GENDERS = {'men', 'woman', 'no specified'}
 
