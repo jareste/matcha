@@ -7,9 +7,11 @@
           <router-link to="/profile">Profile Page</router-link> |
           <router-link to="/match">Match</router-link>
         </div>
-        <div class="search-bar">
-          <input v-model="searchQuery" @keyup.enter="searchProfile" placeholder="Search for user">
-          <button @click="searchProfile">Search</button>
+        <div class="user-info" v-if="user.username && user.photoUrl">
+          <div class="search-bar">
+            <input v-model="searchQuery" @keyup.enter="searchProfile" placeholder="Search for user">
+            <button @click="searchProfile">Search</button>
+          </div>
         </div>
       </div>
       <div class="user-info" v-if="user.username && user.photoUrl">
