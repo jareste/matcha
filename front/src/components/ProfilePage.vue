@@ -62,8 +62,8 @@
         <input type="checkbox" v-model="locationTracking"> Enable Location Tracking
       </label>
     </div>
-    <div>Search Range: {{ user.range }} km</div>
-    <input type="range" v-model="user.range" min="0" max="500">
+    <div>Search Range: {{ range }} km</div>
+    <input type="range" v-model="range" min="0" max="500">
 
     <button @click="saveImages" class="save-button">Save Information</button>
   </div>
@@ -85,6 +85,7 @@ export default {
                 city: '',
                 latitude: '',
                 longitude: '',
+                location: '',
             },
             ageMin: 18,
             ageMax: 120,
@@ -101,7 +102,7 @@ export default {
             enabled: false,
             enableProfile: false,
             fame: 0,
-            range: 0,
+            range: 10,
             locationTracking: false,
         };
     },
@@ -177,6 +178,9 @@ export default {
             formData.append('preferredGender', this.preferredGender);
             formData.append('text', this.text);
             formData.append('enabled', this.enableProfile);
+            formData.append('range', this.range);
+            formData.append('latitude', this.user.latitude);
+            formData.append('longitude', this.user.longitude);
 
             /**/
             formData.append('tags', this.selectedTags.join(','));
@@ -207,8 +211,6 @@ export default {
         },
         async fetchUserPhotos() {
             try {
-                this.getUserLocation();
-                // console.log('location::', this.location)
                 axios.get('http://localhost:5000/user_photos')
                 .then(response => {
                     console.log('aquiiiiiiiiiii', response.data);
@@ -236,7 +238,24 @@ export default {
                     this.isProfileLoaded = true;
                     this.enableProfile = response.data.enabled;
                     this.enabled = response.data.enabled;
-                    console.log('responsedescription', response.data.age);
+                    if (Number.isInteger(response.data.range) && response.data.range >= 0 && response.data.range <= 500) {
+                        this.range = response.data.range;
+                    } else {
+                        this.range = 25;
+                    }
+                    this.user.latitude = parseFloat(response.data.latitude);
+                    this.user.longitude = parseFloat(response.data.longitude);
+                    if (!isNaN(this.user.latitude) && !isNaN(this.user.longitude)) {
+                        if (this.user.latitude !== 0 || this.user.longitude !== 0) {
+                            this.getCityName(this.user.latitude, this.user.longitude);
+                        } else {
+                            this.getUserLocation();
+                        }
+                    } else {
+                        console.log('Latitude or Longitude is not a valid number');
+                        this.getUserLocation();
+                    }
+                    this.user.location = `${this.user.latitude}, ${this.user.longitude}`;
                 });
             } catch (error) {
                 console.error(error);

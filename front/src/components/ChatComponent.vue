@@ -36,6 +36,7 @@ export default {
             socket: null,
             friends: [],
             selectedFriend: null,
+            userId: 1, //update according to user id
         };
     },
     created() {
@@ -50,12 +51,13 @@ export default {
             this.isChatOpen = !this.isChatOpen;
         },
         sendMessage() {
-            if (this.selectedFriend) {
+            if (this.selectedFriend && this.newMessage.trim() !== '') {
                 this.socket.emit('message', {
                     sender_id: this.userId,
                     receiver_id: this.selectedFriend.id,
                     message: this.newMessage,
                 });
+                this.messages.push({ id: this.messages.length, text: this.newMessage });
                 this.newMessage = '';
             }
         },

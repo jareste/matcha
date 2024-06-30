@@ -63,16 +63,37 @@ def user_photos():
     else:
         photoUrl = 'default.png'
 
-    encrypted_description = user[0].description
-    if not encrypted_description:
-        return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": "", "tags": user[0].tags, 'gender': user[0].gender, 'prefered': user[0].preference, 'age': user[0].age, 'first_name': user[0].first_name, 'last_name': user[0].last_name, 'email': user[0].email, 'age_min': user[0].age_min, 'age_max': user[0].age_max, 'fame': user[0].fame, 'enabled': True if user[0].enabled=='true' else False})
-        
-    decrypted_description = cipher.decrypt(encrypted_description.encode()).decode()
-    print("decrypted_description: ", decrypted_description)
-    print("description: ", decrypted_description)
+    latitude, longitude = user[0].location.split(',') if user[0].location else (0, 0)
 
-    print("age", user[0].age)
-    return jsonify({"photos": photo_urls, "username": user[0].username, "photoUrl": photoUrl, "description": decrypted_description, "tags": user[0].tags, 'gender': user[0].gender, 'prefered': user[0].preference, 'age': user[0].age, 'first_name': user[0].first_name, 'last_name': user[0].last_name, 'email': user[0].email, 'age_min': user[0].age_min, 'age_max': user[0].age_max, 'fame': user[0].fame, 'enabled': True if user[0].enabled=='true' else False})
+    response = {
+        "photos": photo_urls,
+        "photoUrl": photoUrl,
+        "username": user[0].username,
+        "description": user[0].description if user[0].description else '',
+        "tags": user[0].tags,
+        "prefered": user[0].preference,
+        "age": user[0].age,
+        "first_name": user[0].first_name,
+        "last_name": user[0].last_name,
+        "email": user[0].email,
+        "age_min": user[0].age_min,
+        "age_max": user[0].age_max,
+        "fame": user[0].fame,
+        "enabled": True if user[0].enabled == 'true' else False,
+        "latitude": latitude,
+        "longitude": longitude,
+        "range": user[0].range,
+    }
+
+    if not user[0].description:
+        return jsonify(response)
+        
+    encrypted_description = user[0].description
+    decrypted_description = cipher.decrypt(encrypted_description.encode()).decode()
+
+    response['description'] = decrypted_description
+
+    return jsonify(response)
 
 
 # from flask import Flask, jsonify, request

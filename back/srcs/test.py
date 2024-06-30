@@ -75,8 +75,39 @@ def upload_photo():
     if enabled == 'true':
         if user.completed == 'false':
             enabled = 'false' # maybe also some message to the user?
+    try:
+        km_range = int(request.form.get('range', ''))
+    except Exception as e:
+        km_range = 25
+    print("km_range: ", km_range)
+    if km_range < 0:
+        km_range = 1
+    if km_range > 500:
+        km_range = 500
 
-    user.update({'gender': gender, 'preference': prefered_gender, 'username': username, 'first_name': first_name, 'last_name': last_name, 'email': email, 'age_max': age_max, 'age_min': age_min, 'enabled': enabled}, {'id': user.id})
+    try:
+        latitude = float(request.form.get('latitude', ''))
+        longitude = float(request.form.get('longitude', ''))
+    except Exception as e:
+        latitude = 41.390205
+        longitude = 2.154007
+
+
+    location = str(latitude) + ',' + str(longitude)
+
+    user.update({
+        'gender': gender,
+        'preference': prefered_gender,
+        'username': username,
+        'first_name': first_name,
+        'last_name': last_name,
+        'email': email,
+        'age_max': age_max,
+        'age_min': age_min,
+        'enabled': enabled,
+        'range': km_range,
+        'location': location
+    }, {'id': user.id})
 
     for i in range(5):  # Assuming a maximum of 5 files
         file_key = f'image{i}'

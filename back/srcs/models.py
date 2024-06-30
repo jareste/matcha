@@ -121,6 +121,8 @@ class User(BaseModel):
     age_min = Field('INTEGER', default=18)
     age_max = Field('INTEGER', default=120)
     fame = Field('INTEGER', default=1000)
+    location = Field('TEXT', default='')
+    range = Field('INTEGER', default=25)
 
     # Predefined tags
     VALID_TAGS = {'#sport', '#movies', '#series', '#gym', '#pets', '#cats', '#coding', '#food',

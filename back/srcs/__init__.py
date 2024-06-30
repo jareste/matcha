@@ -6,11 +6,11 @@ from flask import jsonify
 from flask_socketio import SocketIO, send
 
 jwt = JWTManager()
-socketio = SocketIO(Flask(__name__), cors_allowed_origins="*")
 
 
 def create_app():
     app = Flask(__name__)
+    socketio = SocketIO(app, cors_allowed_origins="*")
 
     @app.errorhandler(HTTPException)
     def handle_exception(e):
@@ -33,6 +33,20 @@ def create_app():
         new_response = jsonify(new_response_data)
         # new_response.status_code = response.status_code
         return new_response
+
+
+    @socketio.on('connect')
+    def handle_connect():
+        print('Client connected')
+
+    @socketio.on('disconnect')
+    def handle_disconnect():
+        print('Client disconnected')
+
+    @socketio.on('message')
+    def handle_message(data):
+        print(f"Message from {data['sender_id']} to {data['receiver_id']}: {data['message']}")
+        socketio.emit('message', {'message': data['message']}, room=data['receiver_id'])
 
 
     CORS(app)
