@@ -53,6 +53,17 @@
       </label>
     </div>
 
+    <div>Location</div>
+    <div>
+      <input type="text" v-model="location" placeholder="Enter your location" :disabled="locationTracking">
+      <button @click="getUserLocation" :disabled="locationTracking">Use my location</button>
+      <label>
+        <input type="checkbox" v-model="locationTracking"> Enable Location Tracking
+      </label>
+    </div>
+    <div>Search Range: {{ range }} km</div>
+    <input type="range" v-model="user.range" min="0" max="500">
+
 
     <button @click="saveImages" class="save-button">Save Information</button>
   </div>
@@ -85,7 +96,11 @@ export default {
             age: '',
             ageError: '',
             enabled: false,
+            enableProfile: false,
             fame: 0,
+            location: '',
+            range: 0,
+            locationTracking: false,
         };
     },
     setup () {
@@ -98,6 +113,11 @@ export default {
         },
         ageMax() {
         this.validateAgeRange();
+        },
+        locationTracking(newVal) {
+            if (!newVal) {
+                this.location = '';
+            }
         },
     },
     methods: {
@@ -182,6 +202,8 @@ export default {
         },
         async fetchUserPhotos() {
             try {
+                this.getUserLocation();
+                // console.log('location::', this.location)
                 axios.get('http://localhost:5000/user_photos')
                 .then(response => {
                     console.log('aquiiiiiiiiiii', response.data);
@@ -213,6 +235,32 @@ export default {
                 });
             } catch (error) {
                 console.error(error);
+            }
+        },
+        getUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                position => {
+                    this.user.location = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
+                    console.log('locationOK:', this.user.location);
+                },
+                async error => {
+                    console.error("Error fetching location: ", error);
+                    await this.getIPLocation();
+                }
+                );
+            } else {
+                console.error("Geolocation is not supported by this browser.");
+                this.getIPLocation();
+            }
+            },
+        async getIPLocation() {
+            try {
+                const response = await axios.get('https://ipapi.co/json/');
+                this.user.location = `${response.data.city}, ${response.data.region}, ${response.data.country_name}`;
+                    console.log('locationNNNNNNNNNOK:', this.user.location);
+                } catch (error) {
+                console.error("Error fetching IP-based location: ", error);
             }
         }
     },
