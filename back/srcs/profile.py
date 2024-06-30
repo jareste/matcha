@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request, abort
+import requests
 from srcs.models import User, Photo, hash_to_db
 import os
 from werkzeug.utils import secure_filename
@@ -127,6 +128,32 @@ def user_photos(username):
     }
 
     return jsonify(response)
+
+OPENCAGE_API_KEY = ''
+
+@app.route('/get_city_name', methods=['GET'])
+def get_city_name():
+    latitude = request.args.get('latitude')
+    longitude = request.args.get('longitude')
+    if not latitude or not longitude:
+        return jsonify({"error": "Missing latitude or longitude"}), 400
+
+    #avoid using the api
+    return jsonify({"city": "Unknown"}), 200
+    try:
+        # response = requests.get(f'https://api.opencagedata.com/geocode/v1/json?q={latitude}+{longitude}&key={OPENCAGE_API_KEY}')
+        data = response.json()
+        print('8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888')
+        print(data)
+        print('8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888')
+
+        if data['results']:
+            city = data['results'][0]['components'].get('city', 'Unknown')
+            return jsonify({"city": city})
+        else:
+            return jsonify({"city": "Unknown"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

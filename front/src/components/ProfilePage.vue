@@ -55,15 +55,15 @@
 
     <div>Location</div>
     <div>
-      <input type="text" v-model="location" placeholder="Enter your location" :disabled="locationTracking">
+      <input type="text" v-model="user.city" placeholder="City name" readonly>
+      <input type="text" v-model="user.location" placeholder="Latitude, Longitude" :disabled="locationTracking">
       <button @click="getUserLocation" :disabled="locationTracking">Use my location</button>
       <label>
         <input type="checkbox" v-model="locationTracking"> Enable Location Tracking
       </label>
     </div>
-    <div>Search Range: {{ range }} km</div>
+    <div>Search Range: {{ user.range }} km</div>
     <input type="range" v-model="user.range" min="0" max="500">
-
 
     <button @click="saveImages" class="save-button">Save Information</button>
   </div>
@@ -81,7 +81,10 @@ export default {
                 first_name: '',
                 last_name: '',
                 photoUrl: '',
-                email: ''
+                email: '',
+                city: '',
+                latitude: '',
+                longitude: '',
             },
             ageMin: 18,
             ageMax: 120,
@@ -98,7 +101,6 @@ export default {
             enabled: false,
             enableProfile: false,
             fame: 0,
-            location: '',
             range: 0,
             locationTracking: false,
         };
@@ -116,9 +118,12 @@ export default {
         },
         locationTracking(newVal) {
             if (!newVal) {
-                this.location = '';
+                this.user.location = '';
+                this.user.city = '';
+                this.user.latitude = '';
+                this.user.longitude = '';
             }
-        },
+        }
     },
     methods: {
         previewImage(event, index) {
@@ -240,9 +245,14 @@ export default {
         getUserLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                position => {
-                    this.user.location = `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`;
-                    console.log('locationOK:', this.user.location);
+                async position => {
+                    this.user.latitude = position.coords.latitude;
+                    this.user.longitude = position.coords.longitude;
+                    this.user.location = `${position.coords.latitude}, ${position.coords.longitude}`;
+                    console.log('location:', this.user.location);
+                    console.log('latitude:', this.user.latitude);
+                    console.log('longitude:', this.user.longitude);
+                    await this.getCityName(position.coords.latitude, position.coords.longitude);
                 },
                 async error => {
                     console.error("Error fetching location: ", error);
@@ -253,13 +263,28 @@ export default {
                 console.error("Geolocation is not supported by this browser.");
                 this.getIPLocation();
             }
-            },
+        },
+        async getCityName(latitude, longitude) {
+            try {
+                const response = await axios.get(`http://localhost:5000/get_city_name`, {
+                params: {
+                    latitude: latitude,
+                    longitude: longitude
+                }
+                });
+                this.user.city = response.data.city;
+            } catch (error) {
+                console.error("Error fetching city name: ", error);
+            }
+        },
         async getIPLocation() {
             try {
                 const response = await axios.get('https://ipapi.co/json/');
-                this.user.location = `${response.data.city}, ${response.data.region}, ${response.data.country_name}`;
-                    console.log('locationNNNNNNNNNOK:', this.user.location);
-                } catch (error) {
+                this.user.city = response.data.city;
+                this.user.latitude = response.data.latitude;
+                this.user.longitude = response.data.longitude;
+                this.user.location = `Latitude: ${response.data.latitude}, Longitude: ${response.data.longitude}`;
+            } catch (error) {
                 console.error("Error fetching IP-based location: ", error);
             }
         }
