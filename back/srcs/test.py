@@ -64,8 +64,16 @@ def upload_photo():
 
 
     gender = request.form.get('gender', '')
+    if gender not in ['men', 'woman', 'no specified']:
+        gender = 'no specified'
+    
     prefered_gender = request.form.get('preferredGender', '')
+    if prefered_gender not in ['men', 'woman', 'no specified']:
+        prefered_gender = 'no specified'
+    
     username = request.form.get('username', '')
+    
+    
     first_name = request.form.get('first_name', '')
     last_name = request.form.get('last_name', '')
     email = request.form.get('email', '')

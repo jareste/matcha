@@ -15,11 +15,13 @@ def is_valid_email(email):
     match = re.match(email_regex, email)
     return bool(match)
 
+def is_valid_username(username):
+    allowed_characters = re.compile(r'^[a-zA-Z0-9_ \-]+$')
+    return bool(allowed_characters.match(username))
+
 
 @bp.route('/register', methods=['POST'])
 def register():
-    print("register")
-    print(request.json)
     username = request.json.get('username', None)
     first_name = request.json.get('first_name', None)
     last_name = request.json.get('last_name', None)
@@ -28,20 +30,21 @@ def register():
     password = request.json.get('password', None)
     password_confirmation = request.json.get('password_confirmation', None)
 
+    #checks
     if not username or not email or not password or not password_confirmation or not age or int(age) < 18 or int(age) > 120:
-        print("Missing required fields")
         abort(400, description="Missing required fields")
-        # return jsonify({"msg": "Missing required fields"}), 400
 
     if not first_name or not last_name:
-        print("Missing first or last name")
-        abort(400, description="Missing first or last name")
-        # return jsonify({"msg": "Missing first or last name"}), 400
+        abort(400, description="Missing required fields")
 
     if password != password_confirmation:
-        print("Passwords do not match")
         abort(400, description="Passwords do not match")
-        # return jsonify({"msg": "Passwords do not match"}), 400
+
+    if not is_valid_username(username):
+        abort(400, description="Username is not valid")
+
+    if not is_valid_username(first_name) or not is_valid_username(last_name):
+        abort(400, description="First and last name must be alphanumeric")
 
     if not is_valid_email(email):
         abort(400, description="Email is not valid.")
@@ -49,22 +52,16 @@ def register():
     user_model = User()
     existing_user = user_model.select(username=username)
     if existing_user:
-        print("Username already exists")
         abort(400, description="Username already exists")
-        # return jsonify({"msg": "Username already exists"}), 400
 
     existing_email = user_model.select(email=email)
     if existing_email:
-        print("Email already exists")
         abort(400, description="Email already exists")
-        # return jsonify({"msg": "Email already exists"}), 400
 
     secure, msg = Security.check_password(password)
     if secure is False:
-        print(msg)
         abort(400, description=msg) 
 
-    print("age,", age)
     try:
         hashed_password = generate_password_hash(password)
         user_model.insert(username=username, email=email, password=hashed_password, age=age, first_name=first_name, last_name=last_name, fame=1000, enabled='false', completed='false')
