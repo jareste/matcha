@@ -78,6 +78,7 @@ def get_possible_match():
     #here must come the algorithm to find best match for self user
     counter = 0
 
+    user[0].recommend_users()
     if user_random:
         while user_random.id == user_id:
             if user[0].select_random() == None:

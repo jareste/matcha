@@ -137,26 +137,25 @@ class User(BaseModel):
         return all(tag in User.VALID_TAGS for tag in tags)
 
     def recommend_users(self):
-        # Select all users who match the preferred gender
+
+        print('self.preference:', self.preference)
         conditions = {
             'enabled': 'true',
             'completed': 'true',
+            'preference': self.gender,
             'gender': self.preference,
         }
         all_users = self.select(**conditions)
         
-        # Filter users based on age and tags
         recommended_users = []
         for user in all_users:
             if user.id == self.id:
                 continue
             
-            # Check age compatibility
             if user.age >= self.age_min and user.age <= self.age_max:
                 user_tags = set(user.tags.split(','))
                 self_tags = set(self.tags.split(','))
                 
-                # Check for at least one common tag
                 if user_tags & self_tags:
                     recommended_users.append(user)
         
@@ -222,6 +221,7 @@ def generate_random_user(index):
     age = random.randint(18, 85)
     age_min = random.randint(18, age)
     age_max = random.randint(age, 85)
+    gender = random.choice(list(User.VALID_GENDERS))
     preference = random.choice(list(User.VALID_GENDERS))
     tags = generate_random_tags()
     location = f'{random.uniform(41.3, 41.5)},{random.uniform(2.0, 2.2)}' # Around Barcelona
@@ -237,6 +237,7 @@ def generate_random_user(index):
         'age': age,
         'age_min': age_min,
         'age_max': age_max,
+        'gender': gender,
         'preference': preference,
         'tags': tags,
         'location': location,

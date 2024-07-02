@@ -104,7 +104,6 @@ def user_photos(username):
 
     user_model = User()
     user = user_model.select(username=username)
-    # user = User.query.filter_by(username=username).first()  # Adjust query based on your ORM
     if not user:
         abort(401, description="User not found")
 
