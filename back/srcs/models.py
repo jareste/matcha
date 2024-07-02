@@ -2,6 +2,7 @@ import sqlite3
 import csv
 from werkzeug.security import generate_password_hash
 import random
+from faker import Faker
 
 import hashlib
 
@@ -135,6 +136,32 @@ class User(BaseModel):
     def validate_tags(tags):
         return all(tag in User.VALID_TAGS for tag in tags)
 
+    def recommend_users(self):
+        # Select all users who match the preferred gender
+        conditions = {
+            'enabled': 'true',
+            'completed': 'true',
+            'gender': self.preference,
+        }
+        all_users = self.select(**conditions)
+        
+        # Filter users based on age and tags
+        recommended_users = []
+        for user in all_users:
+            if user.id == self.id:
+                continue
+            
+            # Check age compatibility
+            if user.age >= self.age_min and user.age <= self.age_max:
+                user_tags = set(user.tags.split(','))
+                self_tags = set(self.tags.split(','))
+                
+                # Check for at least one common tag
+                if user_tags & self_tags:
+                    recommended_users.append(user)
+        
+        return recommended_users
+
 
     def add_tags(self, tags):
         if not self.validate_tags(tags):
@@ -177,20 +204,56 @@ class User(BaseModel):
             return None
 
 #DEBUG
-def insert_users_from_csv(file_name):
-    with open(file_name, 'r') as file:
-        reader = csv.DictReader(file)
-        user = User()
-        for row in reader:
-            existing_user = user.select(username=row['username'], email=row['email'])
-            if not existing_user:
-                hashed_password = generate_password_hash(row['password'])
-                row['password'] = hashed_password
-                user.insert(**row)
+# Generate and insert random users
+fake = Faker()
+user_model = User()
 
-    all_users = user.select_all()
-    for user in all_users:
-        print(user)
+def generate_random_tags():
+    tags = list(User.VALID_TAGS)
+    return ','.join(random.sample(tags, k=2))
+
+def generate_random_user(index):
+    username = f'{fake.user_name()}{index}'
+    first_name = fake.first_name()
+    last_name = fake.last_name()
+    email = fake.email()
+    password = generate_password_hash('123456789')
+    description = fake.text(max_nb_chars=random.randint(5, 420))
+    age = random.randint(18, 85)
+    age_min = random.randint(18, age)
+    age_max = random.randint(age, 85)
+    preference = random.choice(list(User.VALID_GENDERS))
+    tags = generate_random_tags()
+    location = f'{random.uniform(41.3, 41.5)},{random.uniform(2.0, 2.2)}' # Around Barcelona
+    range_ = random.randint(0, 500)
+
+    return {
+        'username': username,
+        'first_name': first_name,
+        'last_name': last_name,
+        'email': email,
+        'password': password,
+        'description': description,
+        'age': age,
+        'age_min': age_min,
+        'age_max': age_max,
+        'preference': preference,
+        'tags': tags,
+        'location': location,
+        'range': range_,
+        'enabled': 'true',
+        'completed': 'true',
+        'fame': 1000
+    }
+
+def insert_random_users(count=500):
+    for i in range(count):
+        user_data = generate_random_user(i + 1)
+        user_model.insert(**user_data)
+        print(f'Inserted user {i + 1}/{count}')
+
+# insert_random_users()
+
 
 # insert_users_from_csv('users.csv')
 

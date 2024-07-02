@@ -14,9 +14,7 @@ def create_app():
 
     @app.errorhandler(HTTPException)
     def handle_exception(e):
-        # pass through HTTP errors
         response = e.get_response()
-        print(str(e.description))  # Print the description
         response_data = response.get_json()
 
         new_response_data = {
@@ -26,7 +24,6 @@ def create_app():
             "error": True,
         }
 
-        # If the original response data was not None, include it in the new response data
         if response_data is not None:
             new_response_data['original_response'] = response_data
 
@@ -53,14 +50,9 @@ def create_app():
 
 
     app.config['SECRET_KEY'] = 'secret!'#os.getenv('SECRET_KEY')
-    # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
     app.config['JWT_SECRET_KEY'] = 'your-secret-key'  # Change this!
     app.config['UPLOAD_FOLDER'] = app.root_path + '/media'
 
-    # @socketio.on('message')
-    # def handleMessage(msg):
-    #     print('Message: ' + msg)
-    #     send(msg, broadcast=True)
 
 
     jwt.init_app(app)

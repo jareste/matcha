@@ -27,27 +27,23 @@ key = load_key()
 cipher = Fernet(key)
 
 ##
-@bp.route('/api/bye', methods=['GET'])
-def bye():
-    users = User.query.all()
-    users_list = [{'id': user.id, 'username': user.username} for user in users]
-    data = {"bye_world": "Goodbye, Weeeee", 'users': users_list}
-    return jsonify(data)
+# @bp.route('/api/bye', methods=['GET'])
+# def bye():
+#     users = User.query.all()
+#     users_list = [{'id': user.id, 'username': user.username} for user in users]
+#     data = {"bye_world": "Goodbye, Weeeee", 'users': users_list}
+#     return jsonify(data)
 
 ##
 @bp.route('/upload_photo', methods=['POST'])
 def upload_photo():
-    print("upload_photo------------------------------------------------------------")
-    print(request.files)
     user = Auth.authenticate(request)
 
     description = request.form.get('text', '')
     if not description or len(description.strip()) == 0 or len(description) > 420:
         abort(400, description="Description is required and must be between 1 and 420 characters.")
 
-    print("description: ", description)
     encrypted_description = cipher.encrypt(description.encode()).decode()
-    print("encrypted_description: ", encrypted_description)
 
     user = user[0]
     user.update({'description': encrypted_description}, {'id': user.id})
@@ -87,7 +83,6 @@ def upload_photo():
         km_range = int(request.form.get('range', ''))
     except Exception as e:
         km_range = 25
-    print("km_range: ", km_range)
     if km_range < 0:
         km_range = 1
     if km_range > 500:
@@ -125,12 +120,10 @@ def upload_photo():
         if file.filename == '':
             continue
         if file:
-            print('uploaded:', file.filename)
             try:
                 with Image.open(file.stream) as img:
                     pass
             except Exception as e:
-                print("The file is not an image")
                 abort(400, description="The file is not an image")
             file.stream.seek(0)
             filename = secure_filename(file.filename)
@@ -148,8 +141,6 @@ def upload_photo():
 
             photo.insert(user_id=user_id, url=upload_path)
             photo.connection.commit()
-            print("photo saved at: ", upload_path)
-            print("username: ", user_id)
 
     access_token = Security.create_jwt(user.username, user.id)
             
@@ -159,37 +150,29 @@ def upload_photo():
     return jsonify({"msg": "Files uploaded successfully", "access_token": access_token})
 
 ##
-@bp.route('/delete_photo/<photo_url>', methods=['DELETE'])
-def delete_photo(photo_url):
-    photo = Photo()
-    username = 'jareste'
-    unique_filename = f"{username}_{photo_url}"
-    hashed_filename = hash_to_db(unique_filename) + ".png"
-    upload_path = os.path.join(app.config['UPLOAD_FOLDER'], hashed_filename)
-    photo_record = photo.select(url=upload_path)
-    if not photo_record:
-        abort(404, description="Photo not found")
+# @bp.route('/delete_photo/<photo_url>', methods=['DELETE'])
+# def delete_photo(photo_url):
+#     photo = Photo()
+#     username = 'jareste'
+#     unique_filename = f"{username}_{photo_url}"
+#     hashed_filename = hash_to_db(unique_filename) + ".png"
+#     upload_path = os.path.join(app.config['UPLOAD_FOLDER'], hashed_filename)
+#     photo_record = photo.select(url=upload_path)
+#     if not photo_record:
+#         abort(404, description="Photo not found")
 
-    if os.path.exists(photo_record[0][2]):
-        os.remove(photo_record[0][2])
-    else:
-        print("The file does not exist")
+#     if os.path.exists(photo_record[0][2]):
+#         os.remove(photo_record[0][2])
 
-    try:
-        photo.delete(url=upload_path)
-    except Exception as e:
-        abort(500, description="There was an issue deleting the photo")
+#     try:
+#         photo.delete(url=upload_path)
+#     except Exception as e:
+#         abort(500, description="There was an issue deleting the photo")
 
-    return 'Photo deleted successfully'
+#     return 'Photo deleted successfully'
 
 from flask import send_from_directory
 
-@bp.route('/uploads/<filename>')
+@bp.route('/uploads/<path:filename>', methods=['GET'])
 def uploaded_file(filename):
-    # user = Auth.authenticate(request)
-    # user_id = user[0][0]
-    # unique_filename = f"{user_id}_{filename}"
-    # hashed_filename = hash_to_db(unique_filename) + ".png"
-    print("showing photo: ", filename)
-    print("---------------------------------------------------")
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)

@@ -1,5 +1,7 @@
 __pycache__/
 back/database.db
+back/srcs/database.db
+back/srcs/sql_inection.py
 .DS_Store
 back/srcs/media/*
 back/.secret.key

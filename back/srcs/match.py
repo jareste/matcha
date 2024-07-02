@@ -33,14 +33,11 @@ def like():
     user_id = data.get('user_id')
     liked_user_id = data.get('liked_user_id')
     
-    print('like', liked_user_id)    
     user_model = User()
     users = user_model.select(id=user_id)
     if users:
         user = users[0]
-        print('liked_user_id', liked_user_id)
         if user.add_like(liked_user_id):
-            print('aqui siiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii12312412421')
             return jsonify({"msg": "It's a match!"}), 200
     return jsonify({"msg": "Liked"}), 200
 
@@ -50,7 +47,6 @@ def dislike():
     user_id = data.get('user_id')
     liked_user_id = data.get('liked_user_id')
 
-    print('dislike', liked_user_id)    
     # user_model = User()
     # users = user_model.select(id=user_id)
     # if users:
@@ -61,7 +57,6 @@ def dislike():
 
 @bp.route('/matches/<int:user_id>', methods=['GET'])
 def get_matches(user_id):
-    print('get matcheeeeeeeeeeeeeeeeeeeeeeeeeeeeees')
     user_model = User()
     users = user_model.select(id=user_id)
     if users:
@@ -80,10 +75,9 @@ def get_possible_match():
     user_model = User()
     user = user_model.select(id=user_id)
     user_random = user[0].select_random()
-    print('possible match!!!!!!!!!!!!!!!!!!!')
     #here must come the algorithm to find best match for self user
-    print('u32131231323123123eeeeeeeeeeeeeeeeeeeeer')
     counter = 0
+
     if user_random:
         while user_random.id == user_id:
             if user[0].select_random() == None:
@@ -92,7 +86,6 @@ def get_possible_match():
             counter += 1
             if counter == 10:
                 return jsonify({"user": -1}), 200
-        print('useeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeer',user_random)
         # return jsonify({"user": -1}), 200 #simulates not finding a match for testing purpouses
         return jsonify({"user": user_random.id, "username": user_random.username, "user_photo": 'default.png'}), 200
     return jsonify({"user": -1}), 200

@@ -35,15 +35,12 @@ def getProfile():
 
     photo_model = Photo()
     photo = photo_model.select(user_id=user_id)
-    for p in photo:
-        print("photo: ", p)
 
     if photo:
         photoUrl = os.path.basename(photo[0].url) if photo[0].url else 'default.png'
     else:
         photoUrl = 'default.png'
 
-    print("profile_pic: ", photoUrl)
     return jsonify({"username": user.username, "email": user.email, "photoUrl": photoUrl, "description": user.description})
 
 #Actual getter of profile page hehe
@@ -56,7 +53,12 @@ def user_photos():
     photos = photo_model.select(user_id=user_id)
 
     photo_urls = [os.path.basename(photo.url) for photo in photos if photo.url]
-    print('photos:', photo_urls)
+
+
+    # user_model = User()
+    # user = user_model.select_all()
+    # for u in user:
+    #     print('user:',u.username)
 
     if photos:
         photoUrl = os.path.basename(photos[0].url) if photos[0].url else 'default.png'
@@ -96,23 +98,12 @@ def user_photos():
     return jsonify(response)
 
 
-# from flask import Flask, jsonify, request
-# import os
-# from models import Auth, Photo, User  # Adjust import according to your project structure
-# from cryptography.fernet import Fernet
-
-# app = Flask(__name__)
-
-# # Define the cipher for decrypting descriptions
-# cipher = Fernet(b'your-secret-key-here')  # Replace with your actual secret key
-
 @app.route('/profile/<username>', methods=['GET'])
 def user_photos(username):
-    Auth.authenticate(request)
+    user = Auth.authenticate(request)
 
     user_model = User()
     user = user_model.select(username=username)
-    print("user: ", username)
     # user = User.query.filter_by(username=username).first()  # Adjust query based on your ORM
     if not user:
         abort(401, description="User not found")
@@ -128,7 +119,10 @@ def user_photos(username):
 
 
     encrypted_description = user.description
-    decrypted_description = cipher.decrypt(encrypted_description.encode()).decode() if encrypted_description else ''
+    try:
+        decrypted_description = cipher.decrypt(encrypted_description.encode()).decode() if encrypted_description else ''
+    except Exception as e:
+        decrypted_description = user.description
 
     response = {
         "photos": photo_urls,
@@ -164,9 +158,6 @@ def get_city_name():
     try:
         # response = requests.get(f'https://api.opencagedata.com/geocode/v1/json?q={latitude}+{longitude}&key={OPENCAGE_API_KEY}')
         data = response.json()
-        print('8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888')
-        print(data)
-        print('8888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888888')
 
         if data['results']:
             city = data['results'][0]['components'].get('city', 'Unknown')

@@ -6,7 +6,6 @@ bp = Blueprint('chat', __name__)
 
 @bp.route('/matches_chat', methods=['GET'])
 def get_matches():
-    print('get frieeeends')
     user = Auth.authenticate(request)
     user_id = user[0].id
     user_model = User()

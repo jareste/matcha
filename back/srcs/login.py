@@ -76,7 +76,7 @@ def login():
     password = request.json.get('password', None)
     user_model = User()
     users = user_model.select(username=username)
-    print('users', users)
+
     if users:
         user = users[0]  # Assume username is unique and get the first match
         if check_password_hash(user.password, password):
@@ -85,23 +85,18 @@ def login():
             user_model.update(updates={'jwt': access_token}, conditions={'username': username})
 
             all_users = user_model.select()
-            # for u in all_users:
-            #     print(u) 
+
             
             ip_address = request.remote_addr
-            # ip_address = '95.127.43.66'#get ip so i can get location
+
             response = requests.get(f'http://ipinfo.io/{ip_address}/json?token=84b405eef28ede')
-            print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-            print(response.json())
 
             photo_model = Photo()
             photos = photo_model.select(user_id=user.id)
-            # for p in photos:
-            #     print("photo: ", p)
+
             photoUrl = os.path.basename(photos[0].url) if photos and len(photos[0].url) > 2 else 'default.png'
 
             return jsonify({"msg": "OK", "access_token": access_token, "username": username, "photoUrl": photoUrl}), 200
 
-    print("Bad username or password")
     abort(401, description="Bad username or password")
 
