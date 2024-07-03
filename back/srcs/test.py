@@ -26,6 +26,22 @@ def load_key():
 key = load_key()
 cipher = Fernet(key)
 
+def check_user_enabled(user):
+    if int(len(user.tags_list)) <= 2:
+        return 'false'
+
+    if not user.location:
+        return 'false'
+
+    photo_model = Photo()
+
+    photo_model.select(id=user.id)
+
+    # if len(photo_model[0])
+
+
+
+
 ##
 # @bp.route('/api/bye', methods=['GET'])
 # def bye():
@@ -69,16 +85,20 @@ def upload_photo():
     
     username = request.form.get('username', '')
     
-    
+    #TODO
+    #parse this all PLEASE
     first_name = request.form.get('first_name', '')
     last_name = request.form.get('last_name', '')
     email = request.form.get('email', '')
     age_min = request.form.get('ageMin', '')
     age_max = request.form.get('ageMax', '')
-    enabled = request.form.get('enabled', '')
-    if enabled == 'true':
-        if user.completed == 'false':
-            enabled = 'false' # maybe also some message to the user?
+    
+
+
+
+    print('condition:::::::::::::::::::::::',int(len(tags_list)) > 2)
+    print('len:::::::::::::::::::::::',int(len(tags_list)))
+    
     try:
         km_range = int(request.form.get('range', ''))
     except Exception as e:
@@ -144,6 +164,13 @@ def upload_photo():
 
     access_token = Security.create_jwt(user.username, user.id)
             
+    enabled = request.form.get('enabled', '')
+    if enabled == 'true' and user.enabled == 'false':
+        # if user.completed == 'false':
+        #     enabled = 'false' # maybe also some message to the user?
+        # else:
+        enabled = check_user_enabled(user)
+
     user.update({'jwt': access_token}, {'id': user.id})
     # user.update(updates={'jwt': access_token}, conditions={'username': username})
 

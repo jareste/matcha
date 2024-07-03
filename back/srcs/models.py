@@ -256,5 +256,4 @@ def insert_random_users(count=500):
 # insert_random_users()
 
 
-# insert_users_from_csv('users.csv')
 

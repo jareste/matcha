@@ -3,6 +3,7 @@
     <img :src="user.photoUrl" alt="User photo" class="profile-photo">
     <div>Fame: {{fame}}</div>
     <!-- <h2 class="username">{{ user.username }}</h2> -->
+      <p>{{ message }}</p>
     <input type="text" v-model="user.username">
     <input type="text" v-model="user.first_name">
     <input type="text" v-model="user.last_name">
@@ -87,6 +88,7 @@ export default {
                 longitude: '',
                 location: '',
             },
+            message: '',
             ageMin: 18,
             ageMax: 120,
             uploads: Array.from({ length: 5 }, () => ({ file: null, preview: null })),

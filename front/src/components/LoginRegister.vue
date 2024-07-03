@@ -120,6 +120,9 @@
             }
             console.log(response.data);
             this.message = 'Registration successful. You can now login.';
+            this.loginForm.username = this.registerForm.username;
+            this.loginForm.password = this.registerForm.password;
+            this.login();
           })
           .catch(error => {
             this.message = 'Error registering: ' + error.response.data.description;
