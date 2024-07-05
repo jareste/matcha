@@ -147,11 +147,18 @@ class User(BaseModel):
         }
         all_users = self.select(**conditions)
         
+        all_users.sort(key=lambda user: user.fame, reverse=True)
+
         recommended_users = []
         for user in all_users:
             if user.id == self.id:
                 continue
-            
+
+            ##
+            if len(recommended_users) >= 10:
+                break
+
+            ##
             if user.age >= self.age_min and user.age <= self.age_max:
                 user_tags = set(user.tags.split(','))
                 self_tags = set(self.tags.split(','))
