@@ -132,8 +132,8 @@ export default {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-}
 
+}
 .match-card {
   border: 1px solid #ccc;
   padding: 16px;
