@@ -3,7 +3,7 @@ from .security import Security
 from .models import User
 
 class Authenticate:
-    def authenticate(request):
+    def authenticate(request, need_enabled=False):
         auth_header = request.headers.get('Authorization')
         if not auth_header:
             abort(401, description="No token provided")
@@ -21,5 +21,9 @@ class Authenticate:
             user = user_model.select(id=user_id)
             if not user:
                 abort(401, description="Invalid token")
-            
+        
+        if need_enabled and user[0].enabled != 'true':
+            abort(401, description="User is not enabled")
+
+
         return user

@@ -127,7 +127,6 @@ def upload_photo():
         'email': email,
         'age_max': age_max,
         'age_min': age_min,
-        'enabled': enabled,
         'range': km_range,
         'location': location
     }, {'id': user.id})

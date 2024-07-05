@@ -78,15 +78,37 @@ def get_possible_match():
     #here must come the algorithm to find best match for self user
     counter = 0
 
-    user[0].recommend_users()
-    if user_random:
-        while user_random.id == user_id:
-            if user[0].select_random() == None:
-                return jsonify({"user": -1}), 200
-            user_random = user[0].select_random()
-            counter += 1
-            if counter == 10:
-                return jsonify({"user": -1}), 200
-        # return jsonify({"user": -1}), 200 #simulates not finding a match for testing purpouses
-        return jsonify({"user": user_random.id, "username": user_random.username, "user_photo": 'default.png'}), 200
-    return jsonify({"user": -1}), 200
+    recommended = user[0].recommend_users()
+    print('recommended:', recommended)
+    for u in recommended:
+        print('user:::::::::::', u.id)
+    
+    if recommended:
+
+        recommended_users = {
+            "msg": "OK",
+            "users": [
+                {
+                    "id": u.id,
+                    "username": u.username,
+                    "photo": 'http://localhost:5000/uploads/default.png'
+                } for u in recommended
+            ]
+        }
+
+
+        return jsonify(recommended_users), 200
+
+    return jsonify({"msg": "KO"}), 200
+
+    # if user_random:
+    #     while user_random.id == user_id:
+    #         if user[0].select_random() == None:
+    #             return jsonify({"user": -1}), 200
+    #         user_random = user[0].select_random()
+    #         counter += 1
+    #         if counter == 10:
+    #             return jsonify({"user": -1}), 200
+    #     # return jsonify({"user": -1}), 200 #simulates not finding a match for testing purpouses
+    #     return jsonify({"user": user_random.id, "username": user_random.username, "user_photo": 'default.png'}), 200
+    # return jsonify({"user": -1}), 200
