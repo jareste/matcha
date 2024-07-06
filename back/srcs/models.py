@@ -192,14 +192,47 @@ class User(BaseModel):
             matches.append(target_id)
             self.update({'matches': ','.join(matches)}, {'id': self.id})
 
+    def add_dislike(self, target_id):
+        dislikes = self.dislikes.split(',') if self.dislikes else []
+        
+        if str(target_id) not in dislikes:
+            dislikes.append(str(target_id))
+            print('dislikesBefore::::::::::::::', self.dislikes)
+            updated_dislikes = ','.join(dislikes)
+            self.update({'dislikes': updated_dislikes}, {'id': self.id})
+            self.dislikes = updated_dislikes
+            print('dislikesAfter::::::::::::::', self.dislikes)
+            return True
+        
+        return False
+
     def add_like(self, target_id):
+        # self.update({'likes': None}, {'id': self.id})
+        # return True
         likes = self.likes.split(',') if self.likes else []
-        if target_id in likes:
+        
+        # Remove any empty strings from the list
+        likes = [like for like in likes if like]
+        
+        if str(target_id) in likes:
             return False
-        likes.append(target_id)
-        self.update({'likes': ','.join(str(likes))}, {'id': self.id})
-        print('likes::::::::::::::::::::::::::::::::::::::::', likes)
+        
+        likes.append(str(target_id))
+        
+        print('likesBefore::::::::::::::', self.likes)
+        
+        # Join the list of likes as a comma-separated string
+        updated_likes = ','.join(likes)
+        
+        self.update({'likes': updated_likes}, {'id': self.id})
+        
+        # Refresh the likes attribute from the database
+        self.likes = updated_likes
+        
+        print('likesAfter::::::::::::::', self.likes)
+        
         return True
+
 
     def check_match(self, target_id):
         self.add_match(target_id)

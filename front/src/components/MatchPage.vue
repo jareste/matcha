@@ -69,6 +69,7 @@ export default {
         });
     },
     likeUser(likedUserId) {
+      console.log('likedUserId', likedUserId);
       axios.post('http://localhost:5000/like', {
         user_id: this.user.id,
         liked_user_id: likedUserId,

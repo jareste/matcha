@@ -49,13 +49,13 @@ def dislike():
     user_id = data.get('user_id')
     liked_user_id = data.get('liked_user_id')
 
-    # user_model = User()
-    # users = user_model.select(id=user_id)
-    # if users:
-    #     user = users[0]
-    #     if user.like(liked_user_id):
-    #         return jsonify({"msg": "It's a match!"}), 200
-    return jsonify({"msg": "Liked"}), 200
+    user_model = User()
+    users = user_model.select(id=user_id)
+    if users:
+        user = users[0]
+        if user.add_dislike(liked_user_id):
+            return jsonify({"msg": "Disliked"}), 200
+    return jsonify({"msg": "disliked"}), 200
 
 @bp.route('/matches/<int:user_id>', methods=['GET'])
 def get_matches(user_id):
@@ -93,7 +93,7 @@ def get_possible_match():
     print('matches:', matches)
     print('likes:', likes)
     print('dislikes:', dislikes)
-    
+
 
     if recommended:
         recommended_users = {
