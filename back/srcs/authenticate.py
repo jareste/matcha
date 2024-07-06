@@ -10,11 +10,13 @@ class Authenticate:
         if auth_header.startswith('Bearer '):
             token = auth_header[7:]
 
+        print("------------------------------------token: ", token)
         try:
             username, user_id = Security.decode_jwt(token)
         except Exception as e:
             abort(401, description="Invalid token")
 
+        print("username: ", username)
         user_model = User()
         user = user_model.select(username=username)
         if not user or user[0].id != user_id:

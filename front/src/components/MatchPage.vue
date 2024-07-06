@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Find Your Match</h1>
+    <h1>Recommended Users</h1>
     <div v-if="possible_match.id != -1"> <!-- v-if="possible_match"> -->
       <div class="user-container">
         <div v-for="possible_match in users" :key="possible_match.id" class="user-card" @click="goToProfile(possible_match.username)">
@@ -49,7 +49,7 @@ export default {
         .then(response => {
           if (response.data.msg == "KO")
           {
-            this.possible_match.id = -1;  // No possible match found
+            this.possible_match.id = -1;
             return;
           }
           this.users = response.data.users;

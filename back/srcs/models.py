@@ -111,6 +111,7 @@ class User(BaseModel):
     photo = Field('TEXT', default='')
     jwt = Field('TEXT', default='')
     likes = Field('TEXT', default='')
+    dislikes = Field('TEXT', default='')
     matches = Field('TEXT', default='')
     description = Field('TEXT', default='')
     tags = Field('TEXT', default='')
@@ -192,6 +193,12 @@ class User(BaseModel):
             self.update({'matches': ','.join(matches)}, {'id': self.id})
 
     def add_like(self, target_id):
+        likes = self.likes.split(',') if self.likes else []
+        if target_id in likes:
+            return False
+        likes.append(target_id)
+        self.update({'likes': ','.join(str(likes))}, {'id': self.id})
+        print('likes::::::::::::::::::::::::::::::::::::::::', likes)
         return True
 
     def check_match(self, target_id):
@@ -233,6 +240,7 @@ def generate_random_user(index):
     tags = generate_random_tags()
     location = f'{random.uniform(41.3, 41.5)},{random.uniform(2.0, 2.2)}' # Around Barcelona
     range_ = random.randint(0, 500)
+    fame = random.randint(0, 5569)
 
     return {
         'username': username,
@@ -251,7 +259,7 @@ def generate_random_user(index):
         'range': range_,
         'enabled': 'true',
         'completed': 'true',
-        'fame': 1000
+        'fame': fame
     }
 
 def insert_random_users(count=500):

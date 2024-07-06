@@ -20,7 +20,10 @@ class Security:
         return create_access_token(identity=name, additional_claims={"user_id": id}, expires_delta=expires)
 
     def decode_jwt(token):
-        decoded_token = decode_token(token)
+        try:
+            decoded_token = decode_token(token)
+        except Exception as e:
+            abort(401, description="Invalid token")
         print("decoded_token: ", decoded_token)
         name = decoded_token['sub']
         user_id = decoded_token['user_id']

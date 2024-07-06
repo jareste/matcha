@@ -29,6 +29,7 @@ def haversine(lat1, lon1, lat2, lon2):
 
 @bp.route('/like', methods=['POST'])
 def like():
+    user = Auth.authenticate(request)
     data = request.get_json()
     user_id = data.get('user_id')
     liked_user_id = data.get('liked_user_id')
@@ -43,6 +44,7 @@ def like():
 
 @bp.route('/dislike', methods=['POST'])
 def dislike():
+    user = Auth.authenticate(request)
     data = request.get_json()
     user_id = data.get('user_id')
     liked_user_id = data.get('liked_user_id')
@@ -57,6 +59,7 @@ def dislike():
 
 @bp.route('/matches/<int:user_id>', methods=['GET'])
 def get_matches(user_id):
+    user = Auth.authenticate(request)
     user_model = User()
     users = user_model.select(id=user_id)
     if users:
@@ -83,8 +86,16 @@ def get_possible_match():
     for u in recommended:
         print('user:::::::::::', u.id)
     
-    if recommended:
+    matches = user[0].matches.split(',') if user[0].matches else []
+    likes = user[0].likes.split(',') if user[0].likes else []
+    dislikes = user[0].dislikes.split(',') if user[0].dislikes else []
 
+    print('matches:', matches)
+    print('likes:', likes)
+    print('dislikes:', dislikes)
+    
+
+    if recommended:
         recommended_users = {
             "msg": "OK",
             "users": [
@@ -92,7 +103,7 @@ def get_possible_match():
                     "id": u.id,
                     "username": u.username,
                     "photo": 'http://localhost:5000/uploads/default.png'
-                } for u in recommended
+                } for u in recommended if u.id != user_id and (u.id not in matches or u.id not in dislikes or u.id not in likes)
             ]
         }
 
