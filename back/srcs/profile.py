@@ -100,7 +100,8 @@ def user_photos():
 
 @app.route('/profile/<username>', methods=['GET'])
 def user_photos(username):
-    user = Auth.authenticate(request)
+    requester = Auth.authenticate(request)
+    requester = requester[0]
 
     user_model = User()
     user = user_model.select(username=username)
@@ -123,7 +124,15 @@ def user_photos(username):
     except Exception as e:
         decrypted_description = user.description
 
+    likes = requester.likes.split(',') if requester.likes else []
+    likes = [like for like in likes if like]
+    if str(user.id) in likes:
+        liked = True
+    else:
+        liked = False
+
     response = {
+        "id": user.id,
         "photos": photo_urls,
         "username": user.username,
         "photoUrl": photoUrl,
@@ -138,9 +147,12 @@ def user_photos(username):
         'age_min': user.age_min,
         'age_max': user.age_max,
         'fame': user.fame,
-        'enabled': True if user.enabled == 'true' else False
+        'enabled': True if user.enabled == 'true' else False,
+        'liked': liked,
     }
 
+    print('likes:', likes)
+    print('liked:', liked)
     return jsonify(response)
 
 OPENCAGE_API_KEY = ''

@@ -29,6 +29,7 @@ def haversine(lat1, lon1, lat2, lon2):
 
 @bp.route('/like', methods=['POST'])
 def like():
+    print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     user = Auth.authenticate(request)
     data = request.get_json()
     liked_user_id = data.get('liked_user_id')
@@ -43,13 +44,10 @@ def like():
 def dislike():
     user = Auth.authenticate(request)
     data = request.get_json()
-    user_id = data.get('user_id')
     liked_user_id = data.get('liked_user_id')
 
-    user_model = User()
-    users = user_model.select(id=user_id)
-    if users:
-        user = users[0]
+    if user:
+        user = user[0]
         if user.add_dislike(liked_user_id):
             return jsonify({"msg": "Disliked"}), 200
     return jsonify({"msg": "disliked"}), 200

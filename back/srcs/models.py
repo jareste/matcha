@@ -194,14 +194,40 @@ class User(BaseModel):
 
     # Used when both users are in each other likes
     def add_match(self, target_id):
+        print('target_id:', target_id)
+        if not target_id:
+            return False
+        target = User().select(id=target_id)[0]
+
+        target_likes = target.likes.split(',') if target.likes else []
+
+        if str(self.id) not in target_likes:
+            return False
+        
+        if str(target_id) in self.matches.split(','):
+            return True
+
         matches = self.matches.split(',') if self.matches else []
+
         if target_id not in matches:
+
             matches.append(target_id)
+            target_matches = target.matches.split(',') if target.matches else []
+            target_matches.append(str(self.id))
+            target.update({'matches': ','.join(target_matches)}, {'id': target.id})
             self.update({'matches': ','.join(matches)}, {'id': self.id})
+            return True
+        return True
 
     def add_dislike(self, target_id):
         dislikes = self.dislikes.split(',') if self.dislikes else []
         
+        likes = self.likes.split(',') if self.likes else []
+        if str(target_id) in likes:
+            likes.remove(str(target_id))
+            updated_likes = ','.join(likes)
+            self.update({'likes': updated_likes}, {'id': self.id})
+
         if str(target_id) not in dislikes:
             dislikes.append(str(target_id))
             print('dislikesBefore::::::::::::::', self.dislikes)
@@ -214,33 +240,34 @@ class User(BaseModel):
         return False
 
     def add_like(self, target_id):
-        # self.update({'likes': None}, {'id': self.id})
-        # return True
+        print('target_id333:', target_id)
         likes = self.likes.split(',') if self.likes else []
         
-        # Remove any empty strings from the list
         likes = [like for like in likes if like]
-        
+        dislikes = self.dislikes.split(',') if self.dislikes else []
+
+        print('updated_likes:', self.likes)
+        print('id:', self.id)
         if str(target_id) in likes:
             return False
         
+        if str(target_id) in dislikes:
+            dislikes.remove(str(target_id))
+            updated_dislikes = ','.join(dislikes)
+            self.update({'dislikes': updated_dislikes}, {'id': self.id})
+
         likes.append(str(target_id))
         
-        print('likesBefore::::::::::::::', self.likes)
-        
-        # Join the list of likes as a comma-separated string
         updated_likes = ','.join(likes)
         
-        print('self.id::::::::::::::', self.id)
-
         self.update({'likes': updated_likes}, {'id': self.id})
-        
-        # Refresh the likes attribute from the database
-        # self.likes = updated_likes
-        
-        print('likesAfter::::::::::::::', self.likes)
-        
-        return True
+        print('updated_likes:', self.likes)
+        print('id:', self.id)
+        self.add_match(target_id)
+        if self.add_match(target_id):
+            return True
+
+        return False
 
 
     def check_match(self, target_id):
