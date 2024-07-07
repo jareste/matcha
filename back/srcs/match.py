@@ -31,13 +31,10 @@ def haversine(lat1, lon1, lat2, lon2):
 def like():
     user = Auth.authenticate(request)
     data = request.get_json()
-    user_id = data.get('user_id')
     liked_user_id = data.get('liked_user_id')
     
-    user_model = User()
-    users = user_model.select(id=user_id)
-    if users:
-        user = users[0]
+    if user:
+        user = user[0]
         if user.add_like(liked_user_id):
             return jsonify({"msg": "It's a match!"}), 200
     return jsonify({"msg": "Liked"}), 200
@@ -86,6 +83,9 @@ def get_possible_match():
     for u in recommended:
         print('user:::::::::::', u.id)
     
+    print('userid:', user[0].id)
+    print('userLikes:', user[0].likes)
+
     matches = user[0].matches.split(',') if user[0].matches else []
     likes = user[0].likes.split(',') if user[0].likes else []
     dislikes = user[0].dislikes.split(',') if user[0].dislikes else []
@@ -103,7 +103,7 @@ def get_possible_match():
                     "id": u.id,
                     "username": u.username,
                     "photo": 'http://localhost:5000/uploads/default.png'
-                } for u in recommended if u.id != user_id and (u.id not in matches or u.id not in dislikes or u.id not in likes)
+                } for u in recommended if u.id != user_id
             ]
         }
 

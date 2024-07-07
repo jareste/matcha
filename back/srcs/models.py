@@ -150,9 +150,16 @@ class User(BaseModel):
         
         all_users.sort(key=lambda user: user.fame, reverse=True)
 
+        likes = self.likes.split(',') if self.likes else []
+        dislikes = self.dislikes.split(',') if self.dislikes else []
+        matches = self.matches.split(',') if self.matches else []
+
         recommended_users = []
         for user in all_users:
             if user.id == self.id:
+                continue
+
+            if str(user.id) in likes or str(user.id) in dislikes or str(user.id) in matches:
                 continue
 
             ##
@@ -224,10 +231,12 @@ class User(BaseModel):
         # Join the list of likes as a comma-separated string
         updated_likes = ','.join(likes)
         
+        print('self.id::::::::::::::', self.id)
+
         self.update({'likes': updated_likes}, {'id': self.id})
         
         # Refresh the likes attribute from the database
-        self.likes = updated_likes
+        # self.likes = updated_likes
         
         print('likesAfter::::::::::::::', self.likes)
         
