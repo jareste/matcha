@@ -330,6 +330,7 @@ def generate_random_user(index):
         'gender': gender,
         'preference': preference,
         'tags': tags,
+        'photo': 'default.png',
         'location': location,
         'range': range_,
         'enabled': 'true',

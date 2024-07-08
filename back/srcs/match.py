@@ -147,7 +147,7 @@ def get_possible_match():
                 {
                     "id": u.id,
                     "username": u.username,
-                    "photo": 'http://localhost:5000/uploads/default.png'
+                    "photo": 'http://localhost:5000/uploads/' + u.photo if u.photo else 'http://localhost:5000/uploads/default.png',
                 } for u in recommended if u.id != user[0].id and str(u.id) not in matches and str(u.id) not in likes and str(u.id) not in dislikes
             ]
         }
