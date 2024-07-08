@@ -228,6 +228,12 @@ class User(BaseModel):
             updated_likes = ','.join(likes)
             self.update({'likes': updated_likes}, {'id': self.id})
 
+        matches = self.matches.split(',') if self.matches else []
+        if str(target_id) in matches:
+            matches.remove(str(target_id))
+            updated_matches = ','.join(matches)
+            self.update({'matches': updated_matches}, {'id': self.id})
+
         if str(target_id) not in dislikes:
             dislikes.append(str(target_id))
             print('dislikesBefore::::::::::::::', self.dislikes)

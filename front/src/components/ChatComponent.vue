@@ -44,6 +44,9 @@ export default {
         this.socket.on('message', (message) => {
             this.messages.push({ id: this.messages.length, text: message.message });
         });
+        this.socket.on('error', (error) => {
+            console.error(error);
+        });
         this.fetchFriends();
     },
     methods: {

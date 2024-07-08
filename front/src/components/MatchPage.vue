@@ -26,7 +26,32 @@
     <div v-else>
       <h1 style="color: #ffffff; background-color: #688952;">No matches yet!</h1>
     </div>
+    <h2>Your likes</h2>
+    <div v-if="likes.length">
+      <div class="user-container">
+        <div v-for="like in likes" :key="like.id" class="user-card" @click="goToProfile(like.username)">
+          <img :src="like.photo" alt="Like photo" class="match-photo" />
+          <p>{{ like.username }}</p>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <h1 style="color: #ffffff; background-color: #688952;">No likes yet!</h1>
+    </div>
+    <h2>Your dislikes</h2>
+    <div v-if="dislikes.length">
+      <div class="user-container">
+        <div v-for="dislike in dislikes" :key="dislike.id" class="user-card" @click="goToProfile(dislike.username)">
+          <img :src="dislike.photo" alt="Dislike photo" class="match-photo" />
+          <p>{{ dislike.username }}</p>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <h1 style="color: #ffffff; background-color: #688952;">No dislikes yet!</h1>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -42,6 +67,8 @@ export default {
         id: -1,
       },
       matches: [],
+      likes: [],
+      dislikes: [],
       user: {
         id: 1, /* TODO update dynamically */
       },
@@ -68,6 +95,8 @@ export default {
         .then(response => {
           if (response.status === 200) {
             this.matches = response.data.matches;
+            this.likes = response.data.likes;
+            this.dislikes = response.data.dislikes;
             console.log('matches', this.matches);
           } else {
             console.log(response);

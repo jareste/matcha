@@ -2,8 +2,11 @@
   <div class="profile-page">
     <div v-if="error" class="error">{{ error }}</div>
     <div v-else>
-      <img :src="user.photoUrl" alt="User photo" class="profile-photo">
-      <button @click="handleLikePass">{{ like_pass }}</button>
+      <div class="like-pass-container">
+        <img :src="user.photoUrl" alt="User photo" class="profile-photo">
+        <button @click="handleLikePass">{{ like_pass }}</button>
+        <p>{{ likes_you }}</p>
+      </div>  
       <div class="photo-gallery">
         <div v-for="(upload, index) in user.uploads" :key="index" class="photo-container">
           <img v-if="upload.preview" :src="upload.preview" class="uploaded-photo" />
@@ -75,6 +78,7 @@ export default {
       },
       validTags: ['#sport', '#movies', '#series', '#gym', '#pets', '#cats', '#coding', '#food', '#party', '#videogames'],
       error: null,
+      likes_you: '',
       like_pass: 'like',
     };
   },
@@ -112,9 +116,8 @@ export default {
           enabled: data.enabled,
           fame: data.fame,
         };
-        console.log('liked:', data.liked)
+        this.likes_you = data.likes_you ? 'Likes you' : '';
         this.like_pass = data.liked ? 'pass' : 'like';
-        console.log('user:', this.user.uploads);
       } catch (error) {
         console.error(error);
         if (error.response && error.response.status === 401) {
@@ -170,6 +173,11 @@ export default {
   height: 150px;
   object-fit: cover;
   border-radius: 50%;
+}
+
+.like-pass-container {
+  display: flex;
+  align-items: center;
 }
 
 .photo-gallery {

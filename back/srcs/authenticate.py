@@ -15,7 +15,6 @@ class Authenticate:
         except Exception as e:
             abort(401, description="Invalid token")
 
-        print("username: ", username)
         user_model = User()
         user = user_model.select(username=username)
         if not user or user[0].id != user_id:
@@ -25,6 +24,5 @@ class Authenticate:
         
         if need_enabled and user[0].enabled != 'true':
             abort(401, description="User is not enabled")
-
 
         return user

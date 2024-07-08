@@ -131,6 +131,13 @@ def user_photos(username):
     else:
         liked = False
 
+    likes_you = user.likes.split(',') if user.likes else []
+    likes_you = [like for like in likes_you if like]
+    if str(requester.id) in likes_you:
+        likes_you = True
+    else:
+        likes_you = False
+
     response = {
         "id": user.id,
         "photos": photo_urls,
@@ -149,6 +156,7 @@ def user_photos(username):
         'fame': user.fame,
         'enabled': True if user.enabled == 'true' else False,
         'liked': liked,
+        'likes_you': likes_you,
     }
 
     print('likes:', likes)
