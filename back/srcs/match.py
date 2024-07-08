@@ -29,7 +29,6 @@ def haversine(lat1, lon1, lat2, lon2):
 
 @bp.route('/like', methods=['POST'])
 def like():
-    print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     user = Auth.authenticate(request)
     data = request.get_json()
     liked_user_id = data.get('liked_user_id')
@@ -79,27 +78,12 @@ def get_matches(user_id):
     return jsonify({"matches": []}), 200
 
 
-
-    #         matches = [int(match_id) for match_id in user.matches.split(',') if match_id]
-    #         matched_users = [user_model.select(id=match_id)[0].__dict__ for match_id in matches]
-    #         return jsonify({"matches": matched_users}), 200
-    # return jsonify({"matches": []}), 200
-
-
 @bp.route('/possible_match', methods=['GET'])
 def get_possible_match():
     user = Auth.authenticate(request)
-    user_id = user[0].id
-    user_model = User()
-    user = user_model.select(id=user_id)
-    user_random = user[0].select_random()
-    #here must come the algorithm to find best match for self user
-    counter = 0
 
     recommended = user[0].recommend_users()
-    print('recommended:', recommended)
-    for u in recommended:
-        print('user:::::::::::', u.id)
+
     
     print('userid:', user[0].id)
     print('userLikes:', user[0].likes)
@@ -130,14 +114,3 @@ def get_possible_match():
 
     return jsonify({"msg": "KO"}), 200
 
-    # if user_random:
-    #     while user_random.id == user_id:
-    #         if user[0].select_random() == None:
-    #             return jsonify({"user": -1}), 200
-    #         user_random = user[0].select_random()
-    #         counter += 1
-    #         if counter == 10:
-    #             return jsonify({"user": -1}), 200
-    #     # return jsonify({"user": -1}), 200 #simulates not finding a match for testing purpouses
-    #     return jsonify({"user": user_random.id, "username": user_random.username, "user_photo": 'default.png'}), 200
-    # return jsonify({"user": -1}), 200

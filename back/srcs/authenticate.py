@@ -10,7 +10,6 @@ class Authenticate:
         if auth_header.startswith('Bearer '):
             token = auth_header[7:]
 
-        print("------------------------------------token: ", token)
         try:
             username, user_id = Security.decode_jwt(token)
         except Exception as e:
