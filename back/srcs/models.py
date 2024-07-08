@@ -197,27 +197,27 @@ class User(BaseModel):
         print('target_id:', target_id)
         if not target_id:
             return False
-        target = User().select(id=target_id)[0]
 
+        target = User().select(id=target_id)[0]
         target_likes = target.likes.split(',') if target.likes else []
 
         if str(self.id) not in target_likes:
             return False
-        
-        if str(target_id) in self.matches.split(','):
+
+        if str(target_id) in self.matches.split(',') if self.matches else []:
             return True
 
         matches = self.matches.split(',') if self.matches else []
 
-        if target_id not in matches:
-
-            matches.append(target_id)
+        if str(target_id) not in matches:
+            matches.append(str(target_id))
             target_matches = target.matches.split(',') if target.matches else []
             target_matches.append(str(self.id))
             target.update({'matches': ','.join(target_matches)}, {'id': target.id})
             self.update({'matches': ','.join(matches)}, {'id': self.id})
             return True
         return True
+
 
     def add_dislike(self, target_id):
         dislikes = self.dislikes.split(',') if self.dislikes else []

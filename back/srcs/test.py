@@ -163,12 +163,15 @@ def upload_photo():
 
     access_token = Security.create_jwt(user.username, user.id)
             
-    enabled = request.form.get('enabled', '')
+    enabled = request.form.get('enabled', '') #TODO
     if enabled == 'true' and user.enabled == 'false':
+        enabled = 'true'
+        completed = 'true'
+        user.update({'enabled': enabled, 'completed': completed}, {'id': user.id})
         # if user.completed == 'false':
         #     enabled = 'false' # maybe also some message to the user?
         # else:
-        enabled = check_user_enabled(user)
+        # enabled = check_user_enabled(user)
 
     user.update({'jwt': access_token}, {'id': user.id})
     # user.update(updates={'jwt': access_token}, conditions={'username': username})

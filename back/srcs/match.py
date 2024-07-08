@@ -55,15 +55,35 @@ def dislike():
 @bp.route('/matches/<int:user_id>', methods=['GET'])
 def get_matches(user_id):
     user = Auth.authenticate(request)
-    user_model = User()
-    users = user_model.select(id=user_id)
-    if users:
-        user = users[0]
+    if user:
+        user = user[0]
         if user.matches:
             matches = [int(match_id) for match_id in user.matches.split(',') if match_id]
-            matched_users = [user_model.select(id=match_id)[0].__dict__ for match_id in matches]
+            matched_users = []
+            seen_user_ids = set()
+            user_model = User()
+            for match_id in matches:
+                if match_id == user_id:
+                    continue
+                if match_id in seen_user_ids:
+                    continue
+                matched_user = user_model.select(id=match_id)[0]
+                seen_user_ids.add(match_id)
+                photo = matched_user.photo if matched_user.photo else 'default.png'
+                matched_users.append({
+                    'id': matched_user.id,
+                    'username': matched_user.username,
+                    'photo': 'http://localhost:5000/uploads/' + photo,
+                })
             return jsonify({"matches": matched_users}), 200
     return jsonify({"matches": []}), 200
+
+
+
+    #         matches = [int(match_id) for match_id in user.matches.split(',') if match_id]
+    #         matched_users = [user_model.select(id=match_id)[0].__dict__ for match_id in matches]
+    #         return jsonify({"matches": matched_users}), 200
+    # return jsonify({"matches": []}), 200
 
 
 @bp.route('/possible_match', methods=['GET'])

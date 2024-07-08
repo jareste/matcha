@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Recommended Users</h1>
-    <div v-if="possible_match.id != -1"> <!-- v-if="possible_match"> -->
+    <div v-if="users.length"> <!-- v-if="possible_match"> -->
       <div class="user-container">
         <div v-for="possible_match in users" :key="possible_match.id" class="user-card" @click="goToProfile(possible_match.username)">
           <img :src="possible_match.photo" alt="User photo" class="user-photo" />
@@ -11,22 +11,26 @@
         </div>
       </div>
     </div>
-    <div v-if="possible_match.id == -1"> <!-- v-if="possible_match"> -->
+    <div v-else>
       <h1 style="color: #ffffff; background-color: #688952;">No possible match found! Please leave our page!!!!</h1>
     </div>
     <h2>Your Matches</h2>
     <div v-if="matches.length">
-      <div v-for="match in matches" :key="match.id" class="match-card">
-        <img :src="match.photo" alt="Match photo" class="match-photo" />
-        <p>{{ match.username }}</p>
+      <div class="user-container">
+        <div v-for="match in matches" :key="match.id" class="user-card" @click="goToProfile(match.username)">
+          <img :src="match.photo" alt="Match photo" class="match-photo" />
+          <p>{{ match.username }}</p>
+        </div>
       </div>
+    </div>
+    <div v-else>
+      <h1 style="color: #ffffff; background-color: #688952;">No matches yet!</h1>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
-// import { useRouter } from 'vue-router';
 
 export default {
   data() {
@@ -62,20 +66,24 @@ export default {
     fetchMatches() {
       axios.get(`http://localhost:5000/matches/${this.user.id}`)
         .then(response => {
-          this.matches = response.data.matches;
+          if (response.status === 200) {
+            this.matches = response.data.matches;
+            console.log('matches', this.matches);
+          } else {
+            console.log(response);
+            console.error('Failed to fetch matches');
+          }
         })
         .catch(error => {
           console.error(error);
         });
     },
     likeUser(likedUserId) {
-      console.log('likedUserId', likedUserId);
       axios.post('http://localhost:5000/like', {
         user_id: this.user.id,
         liked_user_id: likedUserId,
       })
       .then(response => {
-        console.log('response', response.data.msg)
         if (response.data.msg === "It's a match!") {
           alert("It's a match!");
           this.fetchMatches();
@@ -133,8 +141,8 @@ export default {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-
 }
+
 .match-card {
   border: 1px solid #ccc;
   padding: 16px;
