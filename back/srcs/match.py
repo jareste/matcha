@@ -113,6 +113,9 @@ def get_matches(user_id):
                     'username': disliked_user.username,
                     'photo': 'http://localhost:5000/uploads/' + photo,
                 })
+        print('matches____:', user.matches)
+        print('likes____:', user.likes)
+        print('dislikes____:', user.dislikes)
         return jsonify({
             'matches': matched_users,
             'likes': liked_users,

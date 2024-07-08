@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Recommended Users</h1>
-    <div v-if="users.length"> <!-- v-if="possible_match"> -->
+    <div v-if="users.length">
       <div class="user-container">
         <div v-for="possible_match in users" :key="possible_match.id" class="user-card" @click="goToProfile(possible_match.username)">
           <img :src="possible_match.photo" alt="User photo" class="user-photo" />
@@ -51,7 +51,6 @@
       <h1 style="color: #ffffff; background-color: #688952;">No dislikes yet!</h1>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -78,8 +77,7 @@ export default {
     fetchUsers() {
       axios.get('http://localhost:5000/possible_match')
         .then(response => {
-          if (response.data.msg == "KO")
-          {
+          if (response.data.msg == "KO") {
             this.possible_match.id = -1;
             return;
           }
@@ -99,7 +97,6 @@ export default {
             this.dislikes = response.data.dislikes;
             console.log('matches', this.matches);
           } else {
-            console.log(response);
             console.error('Failed to fetch matches');
           }
         })
@@ -115,8 +112,8 @@ export default {
       .then(response => {
         if (response.data.msg === "It's a match!") {
           alert("It's a match!");
-          this.fetchMatches();
         }
+        this.fetchMatches();
         this.fetchUsers();
       })
       .catch(error => {
@@ -129,10 +126,8 @@ export default {
         liked_user_id: userId,
       })
       .then(response => {
-        if (response.data.msg === "It's a match!") {
-          alert("It's a match!");
-          this.fetchMatches();
-        }
+        console.log(response.data);
+        this.fetchMatches();
         this.fetchUsers();
       })
       .catch(error => {
