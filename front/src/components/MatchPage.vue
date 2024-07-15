@@ -77,11 +77,15 @@ export default {
     fetchUsers() {
       axios.get('http://localhost:5000/possible_match')
         .then(response => {
+          console.log("msg", response.data.msg);
           if (response.data.msg == "KO") {
             this.possible_match.id = -1;
+            this.users = [];
             return;
           }
           this.users = response.data.users;
+          console.log("users", this.users.length);
+          console.log("users", this.users);
           this.possible_match.id = 1;
         })
         .catch(error => {
