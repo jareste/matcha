@@ -121,6 +121,7 @@ def get_matches(user_id):
             'likes': liked_users,
             'dislikes': disliked_users,
         }), 200
+    print('emptyyyyyyyyyyyyy:', user.matches)
     return jsonify({"matches": [], "likes": [], "dislikes": []}), 200
 
 

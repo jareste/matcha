@@ -95,7 +95,9 @@ export default {
     fetchMatches() {
       axios.get(`http://localhost:5000/matches/${this.user.id}`)
         .then(response => {
+          console.log('status', response.status)
           if (response.status === 200) {
+            console.log('response', response.data);
             this.matches = response.data.matches;
             this.likes = response.data.likes;
             this.dislikes = response.data.dislikes;
