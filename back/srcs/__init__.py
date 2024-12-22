@@ -58,11 +58,15 @@ def create_app():
     @socketio.on('message')
     def handle_message(data):
         print(data)
-        sender_id = Auth.authenticate_token(data['token'])[0].id
-        print('#######################################################')
-        print(f"Message from {sender_id} to {data['receiver_id']}: {data['message']}")
-        socketio.emit('message', {'message': data['message']}, room=data['receiver_id'])
-    
+        sender = Auth.authenticate_token(data['token'])
+        if sender:
+            sender_id = sender[0].id        
+            print('#######################################################')
+            print(f"Message from {sender_id} to {data['receiver_id']}: {data['message']}")
+            socketio.emit('message', {'message': data['message']}, room=data['receiver_id'])
+        else:
+            print("Authentication failed")
+
     @socketio.on('join')
     def on_join(data):
         user_id = data['user_id']
