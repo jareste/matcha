@@ -36,12 +36,21 @@ export default {
             socket: null,
             friends: [],
             selectedFriend: null,
-            userId: 1, //update according to user id
+            token: null,
+            userId: null,
         };
     },
     created() {
-        this.socket = io('http://localhost:5000');
+        const token = localStorage.getItem('token');
+        if (token) {
+            this.userId = this.parseToken(token).id;
+            this.token = token;
+        }
+        this.socket = io('http://localhost:5000', {
+            query: { token: this.token }
+        });
         this.socket.on('message', (message) => {
+            console.log('message:', message);
             this.messages.push({ id: this.messages.length, text: message.message });
         });
         this.socket.on('error', (error) => {
@@ -53,12 +62,21 @@ export default {
         toggleChat() {
             this.isChatOpen = !this.isChatOpen;
         },
+        parseToken(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(jsonPayload);
+        },
         sendMessage() {
             if (this.selectedFriend && this.newMessage.trim() !== '') {
                 this.socket.emit('message', {
                     sender_id: this.userId,
                     receiver_id: this.selectedFriend.id,
                     message: this.newMessage,
+                    token: this.token
                 });
                 this.messages.push({ id: this.messages.length, text: this.newMessage });
                 this.newMessage = '';
@@ -67,7 +85,8 @@ export default {
         fetchFriends() {
             axios.get('http://localhost:5000/matches_chat', { user_id: this.userId })
                 .then(response => {
-                    this.friends = response.data.friends;
+                    console.log('frens:',response.data.matches);
+                    this.friends = response.data.matches;
                 });
         },
         selectFriend(friend) {

@@ -12,11 +12,13 @@ def get_matches():
     user = user_model.select(id=user_id)
     user = user[0]
 
-    if not user.matches: # check if friends is empty
+    if not user.matches:  # check if friends is empty
         return jsonify({"matches": []})
+    
     matches = user.matches.split(',')
     match_list = []
     for match in matches:
-        match_list.append(user_model.select(id=match)[0].username)
+        match_user = user_model.select(id=match)[0]
+        match_list.append({"id": match_user.id, "username": match_user.username})
+    
     return jsonify({"matches": match_list})
-

@@ -26,3 +26,18 @@ class Authenticate:
             abort(401, description="User is not enabled")
 
         return user
+
+    def authenticate_token(token):
+        try:
+            username, user_id = Security.decode_jwt(token)
+        except Exception as e:
+            return False
+
+        user_model = User()
+        user = user_model.select(username=username)
+        if not user or user[0].id != user_id:
+            user = user_model.select(id=user_id)
+            if not user:
+                return False
+        
+        return user
